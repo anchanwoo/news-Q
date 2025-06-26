@@ -27,7 +27,7 @@ const FilterRelevantNewsOutputSchema = z.array(
   z.object({
     title: z.string().describe('The title of the news article.'),
     description: z.string().describe('A short description or summary of the article.'),
-    link: z.string().url().describe('The URL of the news article.'),
+    link: z.string().describe('The URL of the news article.'),
     source: z.string().describe('The source or region of the news article.'),
     relevanceScore: z.number().describe('A score indicating the relevance and importance of the article (0-1).'),
     reason: z.string().describe('The reason why this article was selected'),
