@@ -14,16 +14,17 @@ let db: Firestore;
 
 /**
  * Initializes the Firebase Admin SDK and returns the Firestore instance.
+ * Explicitly uses applicationDefault() credentials for robust authentication in managed environments.
  */
 function getDb(): Firestore {
   if (db) {
     return db;
   }
 
-  // In a managed Google Cloud environment like App Hosting, calling initializeApp()
-  // without arguments allows the SDK to automatically discover the service account credentials.
   if (getApps().length === 0) {
-    initializeApp();
+    initializeApp({
+      credential: applicationDefault(),
+    });
   }
   
   db = getFirestore();
