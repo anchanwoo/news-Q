@@ -19,6 +19,7 @@ function ArticlePage() {
   const description = searchParams.get('description');
   const source = searchParams.get('source');
   const link = searchParams.get('link');
+  const category = searchParams.get('category');
 
   if (!title || !description || !source || !link) {
     notFound();
@@ -30,9 +31,16 @@ function ArticlePage() {
       <main className="flex-1 py-8 md:py-16">
         <article className="max-w-3xl mx-auto px-4">
           <div className="mb-8">
-            <Badge variant="secondary" className="mb-4">
-              {source}
-            </Badge>
+            <div className="flex items-center gap-2 mb-4">
+               <Badge variant="secondary">
+                {source}
+              </Badge>
+              {category && (
+                <Badge variant="outline">
+                  {category}
+                </Badge>
+              )}
+            </div>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-headline text-foreground leading-tight">
               {title}
             </h1>

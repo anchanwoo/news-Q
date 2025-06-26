@@ -9,9 +9,8 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { FilteredArticle } from '@/lib/types';
-import { slugify, cn } from '@/lib/utils';
+import { slugify } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
-import Image from 'next/image';
 
 export function ArticleCard({
   article,
@@ -21,16 +20,21 @@ export function ArticleCard({
   isFeatured?: boolean;
 }) {
 
-  const linkHref = `/article/${slugify(article.title)}?title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description.substring(0, 500))}&source=${encodeURIComponent(article.source)}&link=${encodeURIComponent(article.link)}`;
+  const linkHref = `/article/${slugify(article.title)}?title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description.substring(0, 500))}&source=${encodeURIComponent(article.source)}&link=${encodeURIComponent(article.link)}&category=${encodeURIComponent(article.category)}`;
 
   if (isFeatured) {
     return (
        <Card className="flex flex-col md:flex-row w-full overflow-hidden border-0 shadow-none rounded-none">
         <div className="flex-1 p-0">
           <CardHeader className="p-0">
-            <Badge variant="secondary" className="mb-4 w-fit">
-              {article.source}
-            </Badge>
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary" className="w-fit">
+                {article.source}
+              </Badge>
+              <Badge variant="outline" className="w-fit">
+                {article.category}
+              </Badge>
+            </div>
             <CardTitle className="font-headline text-3xl md:text-5xl lg:text-6xl leading-tight hover:underline">
               <Link href={linkHref}>
                 {article.title}
@@ -55,7 +59,10 @@ export function ArticleCard({
   return (
     <Card className="flex flex-col h-full overflow-hidden border-0 shadow-none rounded-none bg-transparent">
       <CardHeader className="p-0">
-        <Badge variant="secondary" className="mb-2 w-fit">{article.source}</Badge>
+        <div className="flex items-center gap-2 mb-2">
+           <Badge variant="secondary" className="w-fit">{article.source}</Badge>
+           <Badge variant="outline" className="w-fit">{article.category}</Badge>
+        </div>
         <CardTitle className="font-headline text-xl leading-snug hover:underline">
            <Link href={linkHref}>
             {article.title}

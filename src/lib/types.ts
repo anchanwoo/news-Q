@@ -6,7 +6,7 @@ export type Region = {
 
 export type Article = {
   title: string;
-  description: string;
+  description:string;
   link: string;
   source: string;
   slug: string;
@@ -20,4 +20,5 @@ export type FilteredArticle = {
   source: string;
   relevanceScore: number;
   reason: string;
+  category: string;
 };

@@ -31,8 +31,9 @@ const FilterRelevantNewsOutputSchema = z.array(
     source: z.string().describe('The source or region of the news article.'),
     relevanceScore: z.number().describe('A score indicating the relevance and importance of the article (0-1).'),
     reason: z.string().describe('A concise, one-sentence reason why this article is important enough for the front page.'),
+    category: z.enum(["Politics", "Business", "Technology", "Science", "Culture"]).describe('The category of the news article.'),
   })
-).describe('An array of the most relevant news articles, with a relevance score for each.');
+).describe('An array of the most relevant news articles, with a relevance score and category for each.');
 export type FilterRelevantNewsOutput = z.infer<typeof FilterRelevantNewsOutputSchema>;
 
 export async function filterRelevantNews(input: FilterRelevantNewsInput): Promise<FilterRelevantNewsOutput> {
@@ -52,7 +53,8 @@ Your task is to act as a discerning gatekeeper. You must:
 2.  Identify the stories with the highest global significance, potential impact, and reader interest.
 3.  Assign a 'relevanceScore' from 0.0 to 1.0 to each article, where 1.0 is a must-print, front-page story.
 4.  For each selected article, provide a concise, one-sentence 'reason' explaining its newsworthiness, as if you were justifying its placement to your editorial board.
-5.  Return an array of the articles you have selected. Only include articles with a relevance score of 0.5 or higher.
+5.  Assign a 'category' to each article from the following list: Politics, Business, Technology, Science, Culture.
+6.  Return an array of the articles you have selected. Only include articles with a relevance score of 0.5 or higher.
 
 Consider these factors in your judgment:
 *   **Global Impact:** Does this affect international politics, the world economy, or major global cultures?
