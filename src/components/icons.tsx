@@ -22,12 +22,12 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
         y="55%"
         dominantBaseline="middle"
         textAnchor="middle"
-        fontSize="8"
+        fontSize="7"
         fontWeight="bold"
         fill="currentColor"
         className="font-headline"
       >
-        IA
+        POV
       </text>
     </svg>
   );

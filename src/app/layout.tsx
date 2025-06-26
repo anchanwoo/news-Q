@@ -3,8 +3,8 @@ import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Insight AI',
-  description: 'Your unbiased source for global news, powered by AI.',
+  title: 'POV',
+  description: 'Understand the world from every angle. AI-powered analysis of global news.',
 };
 
 export default function RootLayout({
