@@ -30,7 +30,7 @@ function getDb(): Firestore {
   return db;
 }
 
-const ARTICLES_COLlection = 'analyzedArticles';
+const ARTICLES_COLLECTION = 'analyzedArticles';
 const CACHE_DOCUMENT_ID = 'latest';
 
 
