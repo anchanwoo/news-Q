@@ -27,14 +27,21 @@ export async function fetchArticles(regionId: string = 'all'): Promise<Article[]
   await Promise.all(urls.map(async (feedInfo) => {
     try {
       const feed = await parser.parseURL(feedInfo.url);
-      const articles = feed.items.map(item => ({
-        title: item.title || 'No title',
-        description: item.contentSnippet || item.content?.replace(/<[^>]*>?/gm, '') || 'No description available.',
-        link: item.link || '',
-        source: feedInfo.name,
-        slug: item.title ? slugify(item.title) : (Math.random().toString(36).substring(7)),
-        fullContent: item['content:encoded'] || item.content || '',
-      })).filter(article => article.link && article.title !== 'No title');
+      const articles = feed.items.map(item => {
+        const title = (item.title || 'No title').trim();
+        const description = (item.contentSnippet || item.content?.replace(/<[^>]*>?/gm, '') || 'No description available.').trim();
+        const link = (item.link || '').trim();
+
+        return {
+          title,
+          description,
+          link,
+          source: feedInfo.name,
+          slug: title !== 'No title' ? slugify(title) : (Math.random().toString(36).substring(7)),
+          fullContent: (item['content:encoded'] || item.content || '').trim(),
+        }
+      }).filter(article => article.link && article.title !== 'No title');
+
       allArticles.push(...articles);
     } catch (error) {
       console.error(`Failed to fetch RSS feed from ${feedInfo.url}:`, error);
