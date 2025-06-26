@@ -30,7 +30,7 @@ export function Header() {
           <Link href="/" className="flex items-center gap-2">
             <Logo className="h-8 w-8 text-primary" />
             <span className="font-bold font-headline sm:inline-block text-2xl">
-              Global Gazette
+              Insight AI
             </span>
           </Link>
         </div>

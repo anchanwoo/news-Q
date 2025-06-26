@@ -3,7 +3,7 @@ import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Global Gazette',
+  title: 'Insight AI',
   description: 'Your unbiased source for global news, powered by AI.',
 };
 
