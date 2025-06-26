@@ -16,7 +16,7 @@ const FilterRelevantNewsInputSchema = z.object({
     z.object({
       title: z.string().describe('The title of the news article.'),
       description: z.string().describe('A short description or summary of the article.'),
-      link: z.string().url().describe('The URL of the news article.'),
+      link: z.string().describe('The URL of the news article.'),
       source: z.string().describe('The source or region of the news article (e.g., Korea, China, USA).'),
     })
   ).describe('An array of news articles from various RSS feeds.'),
