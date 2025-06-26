@@ -14,26 +14,23 @@ let db: Firestore;
 
 /**
  * Initializes the Firebase Admin SDK and returns the Firestore instance.
- * Throws an error if initialization fails.
  */
 function getDb(): Firestore {
   if (db) {
     return db;
   }
 
-  // Explicitly use Application Default Credentials. This is the standard for
-  // server-to-server communication in Google Cloud environments.
+  // In a managed Google Cloud environment like App Hosting, calling initializeApp()
+  // without arguments allows the SDK to automatically discover the service account credentials.
   if (getApps().length === 0) {
-    initializeApp({
-      credential: applicationDefault()
-    });
+    initializeApp();
   }
   
   db = getFirestore();
   return db;
 }
 
-const ARTICLES_COLLECTION = 'analyzedArticles';
+const ARTICLES_COLlection = 'analyzedArticles';
 const CACHE_DOCUMENT_ID = 'latest';
 
 
