@@ -1,5 +1,5 @@
 // src/services/firebase-service.ts
-import { initializeApp, getApps } from 'firebase-admin/app';
+import { initializeApp, getApps, applicationDefault } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { type FilteredArticle } from '@/lib/types';
 import { type GenerateArticleAnalysisOutput } from '@/ai/flows/reformat-news-article';
@@ -21,9 +21,12 @@ function getDb(): Firestore {
     return db;
   }
 
-  // This will throw a detailed error if credentials are not found.
+  // Explicitly use Application Default Credentials. This is the standard for
+  // server-to-server communication in Google Cloud environments.
   if (getApps().length === 0) {
-    initializeApp();
+    initializeApp({
+      credential: applicationDefault()
+    });
   }
   
   db = getFirestore();
@@ -51,7 +54,10 @@ export async function cacheArticles(articles: AnalyzedArticle[]): Promise<void> 
     });
     console.log('Successfully cached articles.');
   } catch (error) {
-    console.warn(`[SKIPPING CACHE] Failed to connect to Firestore. If running locally, ensure GOOGLE_APPLICATION_CREDENTIALS are set. Error: ${(error as Error).message}`);
+    // Re-throw the error to be handled by the calling function (e.g., the cron job).
+    // This ensures that failures in caching are not silent.
+    console.error(`[CRITICAL] Failed to cache articles to Firestore. Error: ${(error as Error).message}`);
+    throw error;
   }
 }
 
