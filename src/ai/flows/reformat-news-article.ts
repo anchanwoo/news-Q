@@ -76,11 +76,11 @@ Your task is to take a primary newswire summary and transform it into a multi-fa
 - Format this as 2-3 detailed paragraphs using Markdown.
 
 **Task 3: Business Analysis (If Applicable)**
-- First, check if the primary article's category is 'Business'.
-- If it is, analyze the article's content to determine if it is primarily about a single, specific, publicly traded company.
-- If you can confidently identify one main company, you MUST use the \`fetchFinancialData\` tool to get its financial data. The \`company\` parameter for the tool should be the company's name you identified (e.g., "Apple Inc.", "Microsoft").
-- After using the tool, use the returned financial data and the article's context to populate all the fields for 'financials', 'outlook', and 'marketSnapshot'.
-- If the category is NOT 'Business', OR if the article is about a general market trend, multiple companies, or a private company, DO NOT use the tool and leave the 'financials', 'outlook', and 'marketSnapshot' fields empty.
+- Check if the primary article's category is 'Business'.
+- If the category is 'Business', your task is to determine if financial analysis is appropriate for this article.
+- Read the article carefully. If it is about a specific, publicly traded company, you should use the \`fetchFinancialData\` tool to retrieve its financial data. Use the company's name as the \`company\` parameter for the tool (e.g., "Apple Inc.", "Microsoft").
+- If you use the tool and receive data, use that information and the article's context to populate all the fields for 'financials', 'outlook', and 'marketSnapshot'.
+- If the category is NOT 'Business', or if the article is about a general market trend, multiple companies, a private company, or for any other reason the tool is not applicable, DO NOT use the tool. In this case, you must leave the 'financials', 'outlook', and 'marketSnapshot' fields empty.
 
 **Primary Article Details:**
 - **Title:** {{{primaryArticle.title}}}
