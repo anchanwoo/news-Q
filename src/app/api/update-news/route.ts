@@ -49,7 +49,7 @@ export async function GET() {
             category: article.category,
           },
           // Provide all other headlines for context
-          allArticleTitles: filteredArticles.map(a => a.title),
+          contextualArticles: filteredArticles.map(a => ({ title: a.title, source: a.source })),
         });
 
         return {

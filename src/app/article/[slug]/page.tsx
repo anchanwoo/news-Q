@@ -5,7 +5,7 @@ import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, LineChart, TableIcon, Newspaper, Scale, BarChartBig, Briefcase, Users, Star, TrendingUp, CalendarClock } from 'lucide-react';
+import { ArrowUpRight, GitCompareArrows, LineChart, TableIcon, Newspaper, Scale, BarChartBig, Briefcase, Users, Star, TrendingUp, CalendarClock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -38,6 +38,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
   const briefingParagraphs = article.analysis.briefing.split('\n').filter(p => p.trim() !== '');
   const editorsNoteParagraphs = article.analysis.editorsNote?.split('\n').filter(p => p.trim() !== '');
+  const povCrossfireAnalysisParagraphs = article.analysis.povCrossfire?.analysis.split('\n').filter(p => p.trim() !== '');
 
   const chartData = article.analysis.financials?.map(item => ({
     period: item.period,
@@ -101,6 +102,35 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                   {editorsNoteParagraphs.map((p, i) => (
                     <p key={`note-${i}`}>{p}</p>
                   ))}
+                </CardContent>
+              </Card>
+            )}
+
+            {article.analysis.povCrossfire && (
+              <Card className="bg-primary/5 dark:bg-primary/10 border-primary/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl font-headline">
+                    <GitCompareArrows className="h-5 w-5" />
+                    POV Crossfire
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="prose prose-slate dark:prose-invert max-w-none">
+                        {povCrossfireAnalysisParagraphs?.map((p, i) => (
+                            <p key={`crossfire-${i}`}>{p}</p>
+                        ))}
+                    </div>
+                    <div>
+                        <h4 className="font-semibold text-sm mb-2 mt-4">Compared Articles:</h4>
+                        <ul className="list-none space-y-2">
+                            {article.analysis.povCrossfire.comparedArticles.map((compArticle, i) => (
+                                <li key={i} className="text-sm text-muted-foreground border-l-2 pl-3 border-primary/30">
+                                    <span className="font-medium text-foreground">{compArticle.title}</span>
+                                    <span className="text-xs"> — {compArticle.source}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </CardContent>
               </Card>
             )}
