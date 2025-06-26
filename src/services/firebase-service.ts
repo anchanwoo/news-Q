@@ -1,8 +1,8 @@
 // src/services/firebase-service.ts
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
-import { FilteredArticle } from '@/lib/types';
-import { GenerateArticleAnalysisOutput } from '@/ai/flows/reformat-news-article';
+import { type FilteredArticle } from '@/lib/types';
+import { type GenerateArticleAnalysisOutput } from '@/ai/flows/reformat-news-article';
 
 // Define the structure of the fully analyzed and cached article
 export interface AnalyzedArticle extends FilteredArticle {
@@ -10,30 +10,23 @@ export interface AnalyzedArticle extends FilteredArticle {
 }
 
 // --- Firebase Admin Initialization ---
-// This safely initializes the Firebase Admin SDK, reusing the existing app if it's already initialized.
-function initializeFirebaseAdmin() {
-  if (getApps().length > 0) {
-    return;
-  }
-  
-  // App Hosting provides the GOOGLE_APPLICATION_CREDENTIALS env var.
-  // The SDK automatically picks it up, so no explicit config is needed.
-  // For local dev, you'd set this env var to point to your service account key file.
-   try {
-    initializeApp();
-  } catch (e) {
-     console.log("Could not init firebase, probably because of missing credentials. This is fine for local dev if you're not testing cron jobs.");
-  }
-}
-
-// --- Firestore Service ---
 let db: Firestore;
 
+/**
+ * Initializes the Firebase Admin SDK and returns the Firestore instance.
+ * Throws an error if initialization fails.
+ */
 function getDb(): Firestore {
-  initializeFirebaseAdmin();
-  if (!db) {
-    db = getFirestore();
+  if (db) {
+    return db;
   }
+
+  // This will throw a detailed error if credentials are not found.
+  if (getApps().length === 0) {
+    initializeApp();
+  }
+  
+  db = getFirestore();
   return db;
 }
 
@@ -47,15 +40,19 @@ const CACHE_DOCUMENT_ID = 'latest';
  * @param articles The array of fully analyzed articles to cache.
  */
 export async function cacheArticles(articles: AnalyzedArticle[]): Promise<void> {
-  const firestore = getDb();
-  const cacheDocRef = firestore.collection(ARTICLES_COLLECTION).doc(CACHE_DOCUMENT_ID);
+  try {
+    const firestore = getDb();
+    const cacheDocRef = firestore.collection(ARTICLES_COLLECTION).doc(CACHE_DOCUMENT_ID);
 
-  console.log(`Caching ${articles.length} articles to Firestore...`);
-  await cacheDocRef.set({
-    articles,
-    updatedAt: new Date().toISOString(),
-  });
-  console.log('Successfully cached articles.');
+    console.log(`Caching ${articles.length} articles to Firestore...`);
+    await cacheDocRef.set({
+      articles,
+      updatedAt: new Date().toISOString(),
+    });
+    console.log('Successfully cached articles.');
+  } catch (error) {
+    console.warn(`[SKIPPING CACHE] Failed to connect to Firestore. If running locally, ensure GOOGLE_APPLICATION_CREDENTIALS are set. Error: ${(error as Error).message}`);
+  }
 }
 
 /**
@@ -76,8 +73,8 @@ export async function getCachedArticles(): Promise<AnalyzedArticle[]> {
     const data = docSnap.data();
     return data?.articles || [];
   } catch (error) {
-    console.error("Error getting cached articles:", error);
-    // In case of error (e.g., permissions), return empty to avoid crashing the app.
+    console.error(`[CRITICAL] Could not get cached articles from Firestore. The most likely cause is a missing or misconfigured GOOGLE_APPLICATION_CREDENTIALS environment variable. Error: ${(error as Error).message}`);
+    // Return empty to avoid crashing the app, but log a critical error.
     return [];
   }
 }
