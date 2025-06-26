@@ -19,7 +19,7 @@ export default function LandingPage() {
         priority
       />
       {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/50 z-10"></div>
+      <div className="absolute inset-0 bg-black/60 z-10"></div>
 
       <main className="relative z-20 flex flex-col items-center justify-center text-center px-4">
         <h1 
