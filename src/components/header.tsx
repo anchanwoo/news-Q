@@ -35,7 +35,7 @@ export function Header() {
           </Link>
         </div>
 
-        <div className="hidden md:flex items-center space-x-1">
+        <nav className="hidden md:flex items-center space-x-1">
           {FEEDS.map((region) => (
             <Link
               key={region.id}
