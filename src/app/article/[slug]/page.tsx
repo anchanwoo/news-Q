@@ -1,15 +1,13 @@
 'use client';
 
 import { useSearchParams, notFound } from 'next/navigation';
-import { createNewsBriefing, type CreateNewsBriefingOutput } from '@/ai/flows/reformat-news-article';
+import { generateArticleAnalysis, type GenerateArticleAnalysisOutput } from '@/ai/flows/reformat-news-article';
 import { Header } from '@/components/header';
 import { Badge } from '@/components/ui/badge';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
-import { ArrowUpRight, LineChart, TableIcon } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
+import { ArrowUpRight, LineChart, TableIcon, Newspaper } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -26,10 +24,11 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { fetchArticles } from '@/services/rss-service';
+import { filterRelevantNews } from '@/ai/flows/filter-relevant-news';
 
 
-// Since we can't render the stream directly in a Server Component yet,
-// we'll use a Client Component to handle the streaming.
+// The wrapper component remains a client component to use searchParams hook
 function ArticlePage() {
   const searchParams = useSearchParams();
   const title = searchParams.get('title');
@@ -81,34 +80,44 @@ function ArticlePage() {
   );
 }
 
-function ArticleContent({ title, description, source, category, companyName }: { title: string, description: string, source: string, category: string, companyName?: string }) {
-  const { toast } = useToast();
-  const [data, setData] = useState<CreateNewsBriefingOutput | null>(null);
 
-  useEffect(() => {
-    async function getBriefing() {
-      try {
-        const result = await createNewsBriefing({ title, description, source, category, companyName });
-        setData(result);
-      } catch (error) {
-        console.error("Error creating news briefing:", error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Could not generate the AI news briefing. Please try again later.",
-        });
-        setData({briefing: "The AI briefing for this article could not be generated at this time."});
-      }
-    }
-    getBriefing();
-  }, [title, description, source, category, companyName, toast]);
+// This component is now async to fetch data on the server
+async function ArticleContent({ title, description, source, category, companyName }: { title: string, description: string, source: string, category: string, companyName?: string }) {
+  
+  let data: GenerateArticleAnalysisOutput | null = null;
+  
+  try {
+     // Fetch all articles to provide context to the AI
+    // NOTE: In a production app, this would be inefficient. Caching or a more targeted approach would be better.
+    const articlesToFilter = await fetchArticles();
+    const filteredArticles = await filterRelevantNews({ articles: articlesToFilter.map(({ title, description, link, source }) => ({ title, description, link, source })) });
+    const allArticleTitles = filteredArticles.map(a => a.title);
 
+    const primaryArticle = { title, description, source, category, companyName };
+    
+    data = await generateArticleAnalysis({ primaryArticle, allArticleTitles });
+  } catch (error) {
+    console.error("Error creating news analysis:", error);
+    // We can't use the toast hook here since it's a server component.
+    // We'll render an error message directly.
+    return (
+       <Card className="border-destructive">
+        <CardHeader>
+          <CardTitle className="text-destructive">Analysis Failed</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>The AI-powered analysis for this article could not be generated at this time. Please try again later.</p>
+        </CardContent>
+      </Card>
+    )
+  }
 
-  if (data === null) {
+  if (!data) {
     return <ArticleContentSkeleton />;
   }
   
   const briefingParagraphs = data.briefing.split('\n').filter(p => p.trim() !== '');
+  const editorsNoteParagraphs = data.editorsNote?.split('\n').filter(p => p.trim() !== '');
 
   const chartData = data.financials?.map(item => ({
     period: item.period,
@@ -131,9 +140,25 @@ function ArticleContent({ title, description, source, category, companyName }: {
     <div className="space-y-8">
       <div className="prose prose-lg prose-slate dark:prose-invert max-w-none">
         {briefingParagraphs.map((p, i) => (
-          <p key={i}>{p}</p>
+          <p key={`briefing-${i}`}>{p}</p>
         ))}
       </div>
+
+      {editorsNoteParagraphs && editorsNoteParagraphs.length > 0 && (
+        <Card className="bg-secondary/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl font-headline">
+              <Newspaper className="h-5 w-5" />
+              Editor's Note
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="prose prose-slate dark:prose-invert max-w-none">
+             {editorsNoteParagraphs.map((p, i) => (
+              <p key={`note-${i}`}>{p}</p>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       {data.outlook && (
         <Card>
@@ -224,9 +249,16 @@ function ArticleContentSkeleton() {
       <Skeleton className="h-6 w-11/12" />
       <Skeleton className="h-6 w-full" />
       <br/>
-      <Skeleton className="h-6 w-full" />
-      <Skeleton className="h-6 w-full" />
-      <Skeleton className="h-6 w-10/12" />
+      <Card className="bg-secondary/50">
+        <CardHeader>
+          <Skeleton className="h-8 w-1/3" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Skeleton className="h-6 w-full" />
+          <Skeleton className="h-6 w-full" />
+          <Skeleton className="h-6 w-10/12" />
+        </CardContent>
+      </Card>
        <br/>
       <Skeleton className="h-6 w-full" />
       <Skeleton className="h-6 w-8/12" />

@@ -1,24 +1,29 @@
 'use server';
 /**
- * @fileOverview Creates an in-depth news briefing from an article summary, providing background, context, and for business news, financial analysis.
+ * @fileOverview Creates an in-depth news analysis from an article, providing background, context, an "Editor's Note", and for business news, financial analysis.
  *
- * - createNewsBriefing - A function that handles the briefing creation process.
- * - CreateNewsBriefingInput - The input type for the function.
- * - CreateNewsBriefingOutput - The return type for the function.
+ * - generateArticleAnalysis - A function that handles the analysis creation process.
+ * - GenerateArticleAnalysisInput - The input type for the function.
+ * - GenerateArticleAnalysisOutput - The return type for the function.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { fetchFinancialDataTool } from '@/ai/tools/fetch-financials-tool';
 
-const CreateNewsBriefingInputSchema = z.object({
+const PrimaryArticleSchema = z.object({
   title: z.string().describe('The title of the news article.'),
   description: z.string().describe('The summary or description of the news article.'),
   source: z.string().describe('The original source of the article (e.g., BBC News).'),
   category: z.string().describe('The category of the news article (e.g., Politics, Business).'),
   companyName: z.string().optional().describe('The name of the company discussed in the article, if applicable.'),
 });
-export type CreateNewsBriefingInput = z.infer<typeof CreateNewsBriefingInputSchema>;
+
+const GenerateArticleAnalysisInputSchema = z.object({
+  primaryArticle: PrimaryArticleSchema,
+  allArticleTitles: z.array(z.string()).describe('A list of all other relevant news headlines provided for contextual understanding.'),
+});
+export type GenerateArticleAnalysisInput = z.infer<typeof GenerateArticleAnalysisInputSchema>;
 
 const FinancialDataSchema = z.object({
     period: z.string().describe("The financial period, e.g., 'Q1 2024'."),
@@ -27,52 +32,64 @@ const FinancialDataSchema = z.object({
     change: z.string().describe("Percentage change from the previous period, e.g., '+5.2%'.")
 });
 
-const CreateNewsBriefingOutputSchema = z.object({
-  briefing: z.string().describe('The generated news briefing in Markdown format, covering background, context, and significance.'),
+const GenerateArticleAnalysisOutputSchema = z.object({
+  briefing: z.string().describe('A standard, professional news briefing based on the primary article, formatted in Markdown.'),
+  editorsNote: z.string().optional().describe('An in-depth analysis titled "Editor\'s Note". It synthesizes related news from the provided headlines, provides background context, and offers a future outlook. This should be a comprehensive, multi-paragraph analysis in Markdown format.'),
   outlook: z.string().optional().describe('For business news, a forward-looking analysis of the company or market.'),
   financials: z.array(FinancialDataSchema).optional().describe('For business news, a summary of key financial data for the discussed company.'),
 });
-export type CreateNewsBriefingOutput = z.infer<typeof CreateNewsBriefingOutputSchema>;
+export type GenerateArticleAnalysisOutput = z.infer<typeof GenerateArticleAnalysisOutputSchema>;
 
-export async function createNewsBriefing(input: CreateNewsBriefingInput): Promise<CreateNewsBriefingOutput> {
-  return createNewsBriefingFlow(input);
+export async function generateArticleAnalysis(input: GenerateArticleAnalysisInput): Promise<GenerateArticleAnalysisOutput> {
+  return generateArticleAnalysisFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'createNewsBriefingPrompt',
-  input: {schema: CreateNewsBriefingInputSchema},
-  output: {schema: CreateNewsBriefingOutputSchema},
+  name: 'generateArticleAnalysisPrompt',
+  input: {schema: GenerateArticleAnalysisInputSchema},
+  output: {schema: GenerateArticleAnalysisOutputSchema},
   tools: [fetchFinancialDataTool],
-  prompt: `You are a senior editor at a prestigious publication like The New York Times, with a specialty in deep-dive analysis.
-Your task is to take a raw newswire summary and transform it into a polished, insightful, and eloquent news briefing suitable for your discerning audience.
+  prompt: `You are a senior editor at a prestigious global publication like The New York Times, with a specialty in deep-dive analysis.
+Your task is to take a primary newswire summary and transform it into a multi-faceted, insightful piece of journalism. You have two main tasks.
 
-Adhere to these principles:
-1.  **Adopt a Journalistic Tone**: Write with clarity, authority, and objectivity.
-2.  **Add Context and Depth**: Do not just rephrase the summary. Your primary goal is to explain the 'why'. Provide the essential background, history, and context that a well-informed reader needs to fully understand the story's significance.
-3.  **Structure for Readability**: Use Markdown for clear formatting. Use paragraphs to separate ideas. Do not use headings.
-4.  **Attribute the Source**: Casually mention the original source of the report within the text (e.g., "According to a report from {{source}}, ...").
-5.  **Focus on Significance**: Start by immediately addressing why this story matters.
+**Task 1: Write the News Briefing**
+- Based *only* on the provided primary article, write a polished, insightful news briefing.
+- Adopt a journalistic tone: clear, authoritative, and objective.
+- Add context and depth. Do not just rephrase the summary. Explain the 'why' and the immediate significance.
+- Structure with Markdown for readability. Use paragraphs, but do not use headings.
+- Casually mention the original source (e.g., "According to a report from {{primaryArticle.source}}, ...").
+- Produce a briefing of 2-3 paragraphs.
+
+**Task 2: Write the Editor's Note**
+- After the briefing, write a separate, more comprehensive analysis titled "Editor's Note".
+- For this, you MUST consider the primary article in the broader context of all other recent headlines provided in \`allArticleTitles\`.
+- Synthesize information from potentially related articles in the list to build a deeper narrative. If you identify multiple articles about the same core event, combine their insights.
+- Act as if you have searched the web to provide historical context, explain the current situation's long-term significance, and offer a nuanced prediction of future developments.
+- This section should be more analytical and forward-looking than the main briefing.
+- Format this as 2-3 detailed paragraphs using Markdown.
 
 **Special Instructions for Business News (Category: Business):**
-If the article is about a specific company ({{companyName}}), you MUST use the 'fetchFinancialData' tool to get its latest financial data.
-- Based on the article and the financial data from the tool, provide a concise 'outlook' on the company's future prospects or the market trends.
-- Populate the 'financials' array with the data returned by the tool.
-- If no specific company is named or the tool is not applicable, leave 'outlook' and 'financials' empty.
+- If the primary article is about a specific company ({{primaryArticle.companyName}}), you MUST use the 'fetchFinancialData' tool to get its latest financial data.
+- Based on the article and the financial data, provide a concise 'outlook' on the company's future prospects.
+- Populate the 'financials' array with the data from the tool.
+- If no company is named or the tool is not applicable, leave 'outlook' and 'financials' empty.
 
-You will be given the title, a description/summary, the source, and the category. Produce a briefing of 3-4 paragraphs.
+**Primary Article Details:**
+- **Title:** {{{primaryArticle.title}}}
+- **Newswire Summary:** {{{primaryArticle.description}}}
+- **Original Source:** {{{primaryArticle.source}}}
+- **Category:** {{{primaryArticle.category}}}
 
-**Article Title:** {{{title}}}
-**Newswire Summary:** {{{description}}}
-**Original Source:** {{{source}}}
-**Category:** {{{category}}}
+**Contextual Headlines:**
+{{{json allArticleTitles}}}
 `,
 });
 
-const createNewsBriefingFlow = ai.defineFlow(
+const generateArticleAnalysisFlow = ai.defineFlow(
   {
-    name: 'createNewsBriefingFlow',
-    inputSchema: CreateNewsBriefingInputSchema,
-    outputSchema: CreateNewsBriefingOutputSchema,
+    name: 'generateArticleAnalysisFlow',
+    inputSchema: GenerateArticleAnalysisInputSchema,
+    outputSchema: GenerateArticleAnalysisOutputSchema,
   },
   async input => {
     const {output} = await prompt(input);
