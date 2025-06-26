@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Logo } from '@/components/icons';
 import { cn } from '@/lib/utils';
-import { FEEDS } from '@/lib/mock-data';
+import { CATEGORIES } from '@/lib/mock-data';
 import {
   Select,
   SelectContent,
@@ -17,10 +17,10 @@ import { useRouter } from 'next/navigation';
 export function Header() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const currentRegion = searchParams.get('region') || 'all';
+  const currentCategory = searchParams.get('category') || 'all';
 
-  const onRegionChange = (regionId: string) => {
-    router.push(`/?region=${regionId}`);
+  const onCategoryChange = (categoryId: string) => {
+    router.push(`/?category=${categoryId}`);
   };
 
   return (
@@ -36,31 +36,31 @@ export function Header() {
         </div>
 
         <nav className="hidden md:flex items-center space-x-1">
-          {FEEDS.map((region) => (
+          {CATEGORIES.map((category) => (
             <Link
-              key={region.id}
-              href={`/?region=${region.id}`}
+              key={category.id}
+              href={category.id === 'all' ? '/' : `/?category=${category.id}`}
               className={cn(
                 'px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                currentRegion === region.id
+                currentCategory === category.id
                   ? 'bg-secondary text-secondary-foreground'
                   : 'text-muted-foreground hover:bg-secondary/50'
               )}
             >
-              {region.name}
+              {category.name}
             </Link>
           ))}
         </nav>
 
         <div className="md:hidden">
-          <Select value={currentRegion} onValueChange={onRegionChange}>
+          <Select value={currentCategory} onValueChange={onCategoryChange}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select a region" />
+              <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
-              {FEEDS.map((region) => (
-                <SelectItem key={region.id} value={region.id}>
-                  {region.name}
+              {CATEGORIES.map((category) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
                 </SelectItem>
               ))}
             </SelectContent>

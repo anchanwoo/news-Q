@@ -4,6 +4,11 @@ export type Region = {
   url: string;
 };
 
+export type Category = {
+  id: string;
+  name: string;
+};
+
 export type Article = {
   title: string;
   description:string;

@@ -1,15 +1,32 @@
 'use client';
 
 import { useSearchParams, notFound } from 'next/navigation';
-import { createNewsBriefing } from '@/ai/flows/reformat-news-article';
+import { createNewsBriefing, type CreateNewsBriefingOutput } from '@/ai/flows/reformat-news-article';
 import { Header } from '@/components/header';
 import { Badge } from '@/components/ui/badge';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, LineChart, TableIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart"
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+
 
 // Since we can't render the stream directly in a Server Component yet,
 // we'll use a Client Component to handle the streaming.
@@ -20,8 +37,10 @@ function ArticlePage() {
   const source = searchParams.get('source');
   const link = searchParams.get('link');
   const category = searchParams.get('category');
+  const companyName = searchParams.get('companyName') || undefined;
 
-  if (!title || !description || !source || !link) {
+
+  if (!title || !description || !source || !link || !category) {
     notFound();
   }
 
@@ -54,7 +73,7 @@ function ArticlePage() {
             </Link>
           </div>
            <Suspense fallback={<ArticleContentSkeleton />}>
-            <ArticleContent title={title} description={description} source={source} />
+            <ArticleContent title={title} description={description} source={source} category={category} companyName={companyName} />
           </Suspense>
         </article>
       </main>
@@ -62,15 +81,15 @@ function ArticlePage() {
   );
 }
 
-function ArticleContent({ title, description, source }: { title: string, description: string, source: string }) {
+function ArticleContent({ title, description, source, category, companyName }: { title: string, description: string, source: string, category: string, companyName?: string }) {
   const { toast } = useToast();
-  const [briefing, setBriefing] = useState<string | null>(null);
+  const [data, setData] = useState<CreateNewsBriefingOutput | null>(null);
 
   useEffect(() => {
     async function getBriefing() {
       try {
-        const result = await createNewsBriefing({ title, description, source });
-        setBriefing(result.briefing);
+        const result = await createNewsBriefing({ title, description, source, category, companyName });
+        setData(result);
       } catch (error) {
         console.error("Error creating news briefing:", error);
         toast({
@@ -78,25 +97,121 @@ function ArticleContent({ title, description, source }: { title: string, descrip
           title: "Error",
           description: "Could not generate the AI news briefing. Please try again later.",
         });
-        setBriefing("The AI briefing for this article could not be generated at this time.");
+        setData({briefing: "The AI briefing for this article could not be generated at this time."});
       }
     }
     getBriefing();
-  }, [title, description, source, toast]);
+  }, [title, description, source, category, companyName, toast]);
 
 
-  if (briefing === null) {
+  if (data === null) {
     return <ArticleContentSkeleton />;
   }
+  
+  const briefingParagraphs = data.briefing.split('\n').filter(p => p.trim() !== '');
 
-  // Simple markdown-to-paragraph formatter
-  const paragraphs = briefing.split('\n').filter(p => p.trim() !== '');
+  const chartData = data.financials?.map(item => ({
+    period: item.period,
+    revenue: parseFloat(item.revenue.replace(/[^0-9.]/g, '')),
+    profit: parseFloat(item.profit.replace(/[^0-9.]/g, '')),
+  }));
+
+  const chartConfig = {
+    revenue: {
+      label: "Revenue (M)",
+      color: "hsl(var(--chart-1))",
+    },
+    profit: {
+      label: "Profit (M)",
+      color: "hsl(var(--chart-2))",
+    },
+  } satisfies ChartConfig;
 
   return (
-     <div className="prose prose-lg prose-slate dark:prose-invert max-w-none">
-      {paragraphs.map((p, i) => (
-        <p key={i}>{p}</p>
-      ))}
+    <div className="space-y-8">
+      <div className="prose prose-lg prose-slate dark:prose-invert max-w-none">
+        {briefingParagraphs.map((p, i) => (
+          <p key={i}>{p}</p>
+        ))}
+      </div>
+
+      {data.outlook && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl font-headline">
+              <LineChart className="h-5 w-5" />
+              Future Outlook
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">{data.outlook}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {data.financials && data.financials.length > 0 && (
+         <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl font-headline">
+              <TableIcon className="h-5 w-5" />
+              Financial Snapshot
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+             <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Period</TableHead>
+                    <TableHead>Revenue</TableHead>
+                    <TableHead>Profit</TableHead>
+                    <TableHead>Change</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.financials.map((item) => (
+                    <TableRow key={item.period}>
+                      <TableCell className="font-medium">{item.period}</TableCell>
+                      <TableCell>{item.revenue}</TableCell>
+                      <TableCell>{item.profit}</TableCell>
+                      <TableCell>{item.change}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {chartData && chartData.length > 0 && (
+        <Card>
+          <CardHeader>
+             <CardTitle className="flex items-center gap-2 text-xl font-headline">
+              <LineChart className="h-5 w-5" />
+              Financial Performance
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig} className="w-full h-[300px]">
+              <BarChart data={chartData} accessibilityLayer>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="period"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="dot" />}
+                />
+                <Bar dataKey="revenue" fill="var(--color-revenue)" radius={4} />
+                <Bar dataKey="profit" fill="var(--color-profit)" radius={4} />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      )}
+
     </div>
   );
 }

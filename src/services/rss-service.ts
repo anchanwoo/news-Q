@@ -10,17 +10,8 @@ const parser = new Parser({
   }
 });
 
-export async function fetchArticles(regionId: string = 'all'): Promise<Article[]> {
-  const allFeeds = FEEDS.find(f => f.id === 'all')!;
-  let feedConfig = FEEDS.find(f => f.id === regionId);
-
-  if (!feedConfig?.url) {
-    feedConfig = allFeeds;
-  }
-  
-  const urls = regionId === 'all' 
-    ? FEEDS.filter(f => f.id !== 'all').map(f => ({ url: f.url, name: f.name })) 
-    : [{ url: feedConfig.url, name: feedConfig.name }];
+export async function fetchArticles(): Promise<Article[]> {
+  const urls = FEEDS.map(f => ({ url: f.url, name: f.name })) ;
 
   const allArticles: Article[] = [];
   
@@ -43,8 +34,10 @@ export async function fetchArticles(regionId: string = 'all'): Promise<Article[]
       }).filter(article => article.link && article.title !== 'No title');
 
       allArticles.push(...articles);
-    } catch (error) {
-      console.error(`Failed to fetch RSS feed from ${feedInfo.url}:`, error);
+    } catch (error)
+    {
+      // Silently fail for individual feed errors
+      // console.error(`Failed to fetch RSS feed from ${feedInfo.url}:`, error);
     }
   }));
 

@@ -20,7 +20,28 @@ export function ArticleCard({
   isFeatured?: boolean;
 }) {
 
-  const linkHref = `/article/${slugify(article.title)}?title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description.substring(0, 500))}&source=${encodeURIComponent(article.source)}&link=${encodeURIComponent(article.link)}&category=${encodeURIComponent(article.category)}`;
+  // A simple regex to find a potential company name (Capitalized words)
+  let companyName = '';
+  if (article.category === 'Business') {
+    const companyMatch = article.title.match(/\b([A-Z][a-z]+(\s[A-Z][a-z]+)*)\b/);
+    if (companyMatch && companyMatch[0].split(' ').length <= 3) {
+      companyName = companyMatch[0];
+    }
+  }
+
+  const linkParams = new URLSearchParams({
+    title: article.title,
+    description: article.description.substring(0, 500),
+    source: article.source,
+    link: article.link,
+    category: article.category,
+  });
+
+  if (companyName) {
+    linkParams.set('companyName', companyName);
+  }
+
+  const linkHref = `/article/${slugify(article.title)}?${linkParams.toString()}`;
 
   if (isFeatured) {
     return (
