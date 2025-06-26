@@ -29,7 +29,6 @@ export default function ArticlePage({ searchParams }: {
   const source = searchParams.source;
   const link = searchParams.link;
   const category = searchParams.category;
-  const companyName = searchParams.companyName || undefined;
 
   if (!title || !description || !source || !link || !category) {
     notFound();
@@ -64,7 +63,7 @@ export default function ArticlePage({ searchParams }: {
             </Link>
           </div>
            <Suspense fallback={<ArticleContentSkeleton />}>
-            <ArticleContent title={title} description={description} source={source} category={category} companyName={companyName} />
+            <ArticleContent title={title} description={description} source={source} category={category} />
           </Suspense>
         </article>
       </main>
@@ -75,7 +74,7 @@ export default function ArticlePage({ searchParams }: {
 
 // This component is async to fetch data on the server.
 // It is correctly rendered within a Server Component tree, inside Suspense.
-async function ArticleContent({ title, description, source, category, companyName }: { title: string, description: string, source: string, category: string, companyName?: string }) {
+async function ArticleContent({ title, description, source, category }: { title: string, description: string, source: string, category: string }) {
   
   let data: GenerateArticleAnalysisOutput | null = null;
   
@@ -86,7 +85,7 @@ async function ArticleContent({ title, description, source, category, companyNam
     const filteredArticles = await filterRelevantNews({ articles: articlesToFilter.map(({ title, description, link, source }) => ({ title, description, link, source: source || '' })) });
     const allArticleTitles = filteredArticles.map(a => a.title);
 
-    const primaryArticle = { title, description, source, category, companyName };
+    const primaryArticle = { title, description, source, category };
     
     data = await generateArticleAnalysis({ primaryArticle, allArticleTitles });
   } catch (error) {
@@ -174,7 +173,7 @@ async function ArticleContent({ title, description, source, category, companyNam
                     <Briefcase className="h-5 w-5" />
                     Market Snapshot
                 </CardTitle>
-            </CardHeader>
+            </Header>
             <CardContent className="space-y-6">
                 <div>
                     <h3 className="flex items-center gap-2 font-semibold"><TrendingUp className="h-4 w-4" /> Sector Outlook</h3>

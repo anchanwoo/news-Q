@@ -19,16 +19,6 @@ export function ArticleCard({
   article: FilteredArticle;
   isFeatured?: boolean;
 }) {
-
-  // A simple regex to find a potential company name (Capitalized words)
-  let companyName = '';
-  if (article.category === 'Business') {
-    const companyMatch = article.title.match(/\b([A-Z][a-z]+(\s[A-Z][a-z]+)*)\b/);
-    if (companyMatch && companyMatch[0].split(' ').length <= 3) {
-      companyName = companyMatch[0];
-    }
-  }
-
   const linkParams = new URLSearchParams({
     title: article.title,
     description: article.description.substring(0, 500),
@@ -36,10 +26,6 @@ export function ArticleCard({
     link: article.link,
     category: article.category,
   });
-
-  if (companyName) {
-    linkParams.set('companyName', companyName);
-  }
 
   const linkHref = `/article/${slugify(article.title)}?${linkParams.toString()}`;
 

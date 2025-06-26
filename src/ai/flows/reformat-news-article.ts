@@ -16,7 +16,6 @@ const PrimaryArticleSchema = z.object({
   description: z.string().describe('The summary or description of the news article.'),
   source: z.string().describe('The original source of the article (e.g., BBC News).'),
   category: z.string().describe('The category of the news article (e.g., Politics, Business).'),
-  companyName: z.string().optional().describe('The name of the company discussed in the article, if applicable.'),
 });
 
 const GenerateArticleAnalysisInputSchema = z.object({
@@ -78,10 +77,10 @@ Your task is to take a primary newswire summary and transform it into a multi-fa
 
 **Task 3: Business Analysis (If Applicable)**
 - First, check if the primary article's category is 'Business'.
-- If it is, analyze the article's title and description to determine if it is about a specific, publicly traded company. The pre-identified company is '{{primaryArticle.companyName}}' -- use this as a strong hint, but verify it from the article's content.
-- If you can confidently identify a specific company as the main subject, you MUST use the \`fetchFinancialData\` tool to get its financial data.
+- If it is, analyze the article's content to determine if it is primarily about a single, specific, publicly traded company.
+- If you can confidently identify one main company, you MUST use the \`fetchFinancialData\` tool to get its financial data. The \`company\` parameter for the tool should be the company's name you identified (e.g., "Apple Inc.", "Microsoft").
 - After using the tool, use the returned financial data and the article's context to populate all the fields for 'financials', 'outlook', and 'marketSnapshot'.
-- If the category is NOT 'Business', OR if the article is about a general market trend or multiple companies without a single focus, DO NOT use the tool. In this case, leave the 'financials', 'outlook', and 'marketSnapshot' fields empty.
+- If the category is NOT 'Business', OR if the article is about a general market trend, multiple companies, or a private company, DO NOT use the tool and leave the 'financials', 'outlook', and 'marketSnapshot' fields empty.
 
 **Primary Article Details:**
 - **Title:** {{{primaryArticle.title}}}
