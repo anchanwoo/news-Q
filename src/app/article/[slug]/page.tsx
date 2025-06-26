@@ -5,7 +5,7 @@ import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, LineChart, TableIcon, Newspaper, Scale, BarChartBig, Briefcase, Users, Star, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, LineChart, TableIcon, Newspaper, Scale, BarChartBig, Briefcase, Users, Star, TrendingUp, CalendarClock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -104,7 +104,51 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                 </CardContent>
               </Card>
             )}
+
+            {article.analysis.keyFigures && article.analysis.keyFigures.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl font-headline">
+                    <Users className="h-5 w-5" />
+                    Key Figures
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {article.analysis.keyFigures.map((figure) => (
+                    <div key={figure.name}>
+                      <h3 className="font-semibold">{figure.name}</h3>
+                      <p className="text-muted-foreground mt-1 prose prose-sm">{figure.profile}</p>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
             
+            {article.analysis.timeline && article.analysis.timeline.length > 0 && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-xl font-headline">
+                            <CalendarClock className="h-5 w-5" />
+                            Event Timeline
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="relative pl-6">
+                            <div className="absolute left-[1px] top-1 h-full w-0.5 bg-border -translate-x-1/2"></div>
+                            {article.analysis.timeline.map((item, index) => (
+                                <div key={index} className="relative flex items-start pb-8 last:pb-0">
+                                    <div className="absolute left-[1px] top-1.5 h-3 w-3 rounded-full bg-primary -translate-x-1/2 border-4 box-content border-background"></div>
+                                    <div className="pl-8">
+                                        <p className="font-semibold text-sm">{item.date}</p>
+                                        <p className="text-muted-foreground text-sm">{item.event}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
             {article.analysis.financials && article.analysis.financials.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
                   <Card>
