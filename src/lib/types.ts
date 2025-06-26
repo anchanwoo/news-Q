@@ -14,6 +14,7 @@ export type Article = {
   description:string;
   link: string;
   source: string;
+  imageUrl?: string;
   slug: string;
   fullContent?: string;
 };
@@ -26,4 +27,6 @@ export type FilteredArticle = {
   relevanceScore: number;
   reason: string;
   category: string;
+  imageUrl?: string;
+  slug: string;
 };

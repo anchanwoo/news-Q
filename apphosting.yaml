@@ -4,4 +4,17 @@
 runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
-  maxInstances: 1
+  maxInstances: 2
+  minInstances: 0
+
+# Defines scheduled jobs.
+# https://firebase.google.com/docs/app-hosting/configure#jobs
+scheduledJobs:
+- schedule: "0 8 * * *" # Runs every day at 8:00 AM.
+  timeZone: "Asia/Seoul" # Sets timezone to KST
+  target: /api/update-news
+  # Optionally, you can set a retry configuration.
+  retryConfig:
+    retryCount: 2
+    maxRetryDuration: 2h
+

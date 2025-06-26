@@ -1,12 +1,11 @@
 import { Suspense } from 'react';
-import { filterRelevantNews } from '@/ai/flows/filter-relevant-news';
-import { fetchArticles } from '@/services/rss-service';
 import { ArticleCard } from '@/components/article-card';
 import { Header } from '@/components/header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CATEGORIES } from '@/lib/mock-data';
 import { Separator } from '@/components/ui/separator';
 import type { FilteredArticle } from '@/lib/types';
+import { getCachedArticles } from '@/services/firebase-service';
 
 
 export default function Home({
@@ -38,32 +37,20 @@ export default function Home({
 }
 
 async function ArticleGrid({ category }: { category: string }) {
-  const articlesToFilter = await fetchArticles();
+  const allArticles = await getCachedArticles();
 
-  if (articlesToFilter.length === 0) {
+  if (!allArticles || allArticles.length === 0) {
     return (
       <div className="text-center py-16 text-muted-foreground">
-        <p>No articles could be fetched at this time. Please try again later.</p>
-      </div>
-    );
-  }
-  
-  const filteredArticles = await filterRelevantNews({
-    articles: articlesToFilter.map(({ title, description, link, source }) => ({ title: title || '', description: description || '', link: link || '', source: source || '' })),
-  });
-
-  if (!filteredArticles || filteredArticles.length === 0) {
-    return (
-      <div className="text-center py-16 text-muted-foreground">
-        <p>AI could not identify relevant articles at this time.</p>
+        <p>No articles found. Please try again after the next scheduled update (8 AM KST).</p>
       </div>
     );
   }
 
   const articlesForCategory = category === 'all'
-    ? filteredArticles
-    : filteredArticles.filter(a => a.category.toLowerCase() === category.toLowerCase());
-
+    ? allArticles
+    : allArticles.filter(a => a.category.toLowerCase() === category.toLowerCase());
+  
   if (articlesForCategory.length === 0) {
      return (
       <div className="text-center py-16 text-muted-foreground">
@@ -72,10 +59,10 @@ async function ArticleGrid({ category }: { category: string }) {
     );
   }
 
-  const sortedArticles = articlesForCategory.sort((a, b) => b.relevanceScore - a.relevanceScore);
-  const topArticle = sortedArticles[0];
-  const nextTwoArticles = sortedArticles.slice(1, 3);
-  const remainingArticles = sortedArticles.slice(3);
+  // Articles are pre-sorted by relevance score in the cache
+  const topArticle = articlesForCategory[0];
+  const nextTwoArticles = articlesForCategory.slice(1, 3);
+  const remainingArticles = articlesForCategory.slice(3);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-12">
@@ -111,15 +98,19 @@ function ArticleGridSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-12">
       <div className="md:col-span-12">
-        <div className="space-y-4 py-4">
-          <Skeleton className="h-8 w-1/4" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-10 w-1/3" />
+        <div className="flex flex-col md:flex-row gap-8">
+          <Skeleton className="md:w-1/2 h-96" />
+          <div className="md:w-1/2 space-y-4 py-4">
+            <Skeleton className="h-8 w-1/4" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-10 w-1/3" />
+          </div>
         </div>
       </div>
       {[...Array(2)].map((_, i) => (
         <div key={i} className="md:col-span-6 space-y-3">
+          <Skeleton className="h-48 w-full" />
           <Skeleton className="h-6 w-1/4" />
           <Skeleton className="h-8 w-full" />
           <Skeleton className="h-16 w-3/4" />
@@ -130,6 +121,7 @@ function ArticleGridSkeleton() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
              {[...Array(3)].map((_, i) => (
               <div key={i} className="space-y-3">
+                 <Skeleton className="h-32 w-full" />
                 <Skeleton className="h-6 w-1/4" />
                 <Skeleton className="h-8 w-full" />
                 <Skeleton className="h-16 w-3/4" />

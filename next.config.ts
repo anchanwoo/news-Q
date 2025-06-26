@@ -16,6 +16,30 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: '**.nytimes.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.bbci.co.uk',
+      },
+      {
+        protocol: 'http',
+        hostname: 'www.koreaherald.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.japantimes.co.jp',
+      },
+       {
+        protocol: 'https',
+        hostname: '**.france24.com',
+      },
+       {
+        protocol: 'https',
+        hostname: '**.arabnews.com',
+      },
     ],
   },
 };

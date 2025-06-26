@@ -18,6 +18,8 @@ const FilterRelevantNewsInputSchema = z.object({
       description: z.string().describe('A short description or summary of the article.'),
       link: z.string().describe('The URL of the news article.'),
       source: z.string().describe('The source or region of the news article (e.g., Korea, China, USA).'),
+      imageUrl: z.string().optional().describe('The URL of an image associated with the article.'),
+      slug: z.string().describe('A URL-friendly slug for the article.'),
     })
   ).describe('An array of news articles from various RSS feeds.'),
 });
@@ -29,6 +31,8 @@ const FilterRelevantNewsOutputSchema = z.array(
     description: z.string().describe('A short description or summary of the article.'),
     link: z.string().describe('The URL of the news article.'),
     source: z.string().describe('The source or region of the news article.'),
+    imageUrl: z.string().optional().describe('The URL of an image associated with the article.'),
+    slug: z.string().describe('A URL-friendly slug for the article.'),
     relevanceScore: z.number().describe('A score indicating the relevance and importance of the article (0-1).'),
     reason: z.string().describe('A concise, one-sentence reason why this article is important enough for the front page.'),
     category: z.enum(["Politics", "Business", "Technology", "Science", "Culture"]).describe('The category of the news article.'),
@@ -55,6 +59,7 @@ Your task is to act as a discerning gatekeeper. You must:
 4.  For each selected article, provide a concise, one-sentence 'reason' explaining its newsworthiness, as if you were justifying its placement to your editorial board.
 5.  Assign a 'category' to each article from the following list: Politics, Business, Technology, Science, Culture.
 6.  Return an array of the articles you have selected. Only include articles with a relevance score of 0.5 or higher.
+7. Important: You must pass through the original 'slug', 'imageUrl', 'link', 'source', 'title', and 'description' for each article you select. Do not modify them.
 
 Consider these factors in your judgment:
 *   **Global Impact:** Does this affect international politics, the world economy, or major global cultures?
