@@ -1,6 +1,4 @@
-'use client';
-
-import { useSearchParams, notFound } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { generateArticleAnalysis, type GenerateArticleAnalysisOutput } from '@/ai/flows/reformat-news-article';
 import { Header } from '@/components/header';
 import { Badge } from '@/components/ui/badge';
@@ -27,17 +25,17 @@ import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import { fetchArticles } from '@/services/rss-service';
 import { filterRelevantNews } from '@/ai/flows/filter-relevant-news';
 
-
-// The wrapper component remains a client component to use searchParams hook
-function ArticlePage() {
-  const searchParams = useSearchParams();
-  const title = searchParams.get('title');
-  const description = searchParams.get('description');
-  const source = searchParams.get('source');
-  const link = searchParams.get('link');
-  const category = searchParams.get('category');
-  const companyName = searchParams.get('companyName') || undefined;
-
+// The page is now a Server Component by default.
+// It receives searchParams as props, so we don't need 'use client' or the hook.
+export default function ArticlePage({ searchParams }: {
+  searchParams: { [key: string]: string | undefined }
+}) {
+  const title = searchParams.title;
+  const description = searchParams.description;
+  const source = searchParams.source;
+  const link = searchParams.link;
+  const category = searchParams.category;
+  const companyName = searchParams.companyName || undefined;
 
   if (!title || !description || !source || !link || !category) {
     notFound();
@@ -81,7 +79,8 @@ function ArticlePage() {
 }
 
 
-// This component is now async to fetch data on the server
+// This component is async to fetch data on the server.
+// It is correctly rendered within a Server Component tree, inside Suspense.
 async function ArticleContent({ title, description, source, category, companyName }: { title: string, description: string, source: string, category: string, companyName?: string }) {
   
   let data: GenerateArticleAnalysisOutput | null = null;
@@ -264,13 +263,4 @@ function ArticleContentSkeleton() {
       <Skeleton className="h-6 w-8/12" />
     </div>
   )
-}
-
-// Next.js requires a default export for pages.
-export default function ArticlePageContainer() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ArticlePage />
-    </Suspense>
-  );
 }
