@@ -173,7 +173,7 @@ async function ArticleContent({ title, description, source, category }: { title:
                     <Briefcase className="h-5 w-5" />
                     Market Snapshot
                 </CardTitle>
-            </Header>
+            </CardHeader>
             <CardContent className="space-y-6">
                 <div>
                     <h3 className="flex items-center gap-2 font-semibold"><TrendingUp className="h-4 w-4" /> Sector Outlook</h3>
