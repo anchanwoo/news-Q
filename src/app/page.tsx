@@ -19,25 +19,45 @@ export default function LandingPage() {
         priority
       />
       {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/50 z-10"></div>
+      <div className="absolute inset-0 bg-black/40 z-10"></div>
 
       <main className="relative z-20 flex flex-col items-center justify-center text-center px-4">
+        {/* POPEYE Style Japanese Title */}
         <h1 
-          className="font-jp font-extrabold text-7xl md:text-9xl tracking-tighter"
-          style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.7)' }}
+          className="font-bold text-8xl md:text-[12rem] lg:text-[14rem] tracking-wide mb-4"
+          style={{ 
+            fontFamily: '"Hiragino Kaku Gothic ProN", "Hiragino Sans", "BIZ UDPGothic", "Meiryo", sans-serif',
+            textShadow: '4px 4px 8px rgba(0,0,0,0.8)',
+            letterSpacing: '0.1em',
+            fontWeight: '900'
+          }}
         >
           ニュースQ
         </h1>
+        
+        {/* English Subtitle */}
         <p 
-          className="mt-4 max-w-2xl text-lg md:text-xl text-white/95"
+          className="mt-6 max-w-3xl text-xl md:text-2xl lg:text-3xl text-white font-semibold leading-relaxed"
+          style={{ textShadow: '2px 2px 6px rgba(0,0,0,0.9)' }}
+        >
+          AI-Powered Global News Analysis
+        </p>
+        
+        <p 
+          className="mt-4 max-w-4xl text-base md:text-lg lg:text-xl text-white/90 leading-relaxed"
           style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}
         >
-          AIが世界のニュースを多角的に分析し、あなただけの深い洞察を提供します。
+          Discover deep insights from worldwide news sources with our intelligent analysis platform
         </p>
+        
         <Link href="/news" passHref>
-          <Button variant="outline" size="lg" className="mt-8 bg-transparent border-white text-white hover:bg-white hover:text-black transition-all duration-300 shadow-lg">
-            最新ニュースを見る
-            <ArrowRight className="ml-2 h-5 w-5" />
+          <Button 
+            variant="outline" 
+            size="lg" 
+            className="mt-10 px-8 py-4 text-lg font-semibold bg-white/10 backdrop-blur-sm border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
+          >
+            Explore Latest News
+            <ArrowRight className="ml-3 h-6 w-6" />
           </Button>
         </Link>
       </main>

@@ -1,22 +1,10 @@
 import { notFound } from 'next/navigation';
 import { Header } from '@/components/header';
 import { Badge } from '@/components/ui/badge';
-import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, GitCompareArrows, LineChart, TableIcon, Newspaper, Scale, BarChartBig, Briefcase, Users, Star, TrendingUp, CalendarClock } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { ArrowUpRight, Clock, Calendar, User, TrendingUp, BarChart3 } from 'lucide-react';
 import { getMockArticleBySlug } from '@/lib/mock-news';
-import { FinancialChart } from './financial-chart';
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
   const { slug } = params;
@@ -25,7 +13,6 @@ export default async function ArticlePage({ params }: { params: { slug: string }
     notFound();
   }
   
-  // Firebase 대신 목업 데이터 사용
   const article = await getMockArticleBySlug(slug);
 
   if (!article) {
@@ -33,252 +20,394 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   }
   
   const placeholderImage = `https://placehold.co/1200x630.png`;
-
-  const briefingParagraphs = article.analysis.briefing.split('\n').filter(p => p.trim() !== '');
-  const editorsNoteParagraphs = article.analysis.editorsNote?.split('\n').filter(p => p.trim() !== '');
-  const povCrossfireAnalysisParagraphs = article.analysis.povCrossfire?.analysis?.split('\n').filter((p: string) => p.trim() !== '');
-
-  const chartData = article.analysis.financials?.map(item => ({
-    period: item.period,
-    revenue: parseFloat(item.revenue.replace(/[^0-9.]/g, '')),
-    profit: parseFloat(item.profit.replace(/[^0-9.]/g, '')),
-  })).reverse();
+  const briefingParagraphs = article.analysis.briefing.split('\n').filter((p: string) => p.trim() !== '');
+  const editorsNoteParagraphs = article.analysis.editorsNote?.split('\n').filter((p: string) => p.trim() !== '');
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <Header />
-      <main className="flex-1 py-8 md:py-16">
-        <article className="max-w-3xl mx-auto px-4">
-           <div className="mb-8">
-             <div className="flex items-center gap-2 mb-4">
-               <Badge variant="secondary">{article.source}</Badge>
-               {article.category && <Badge variant="outline">{article.category}</Badge>}
-             </div>
-             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-headline text-foreground leading-tight">
-               {article.title}
-             </h1>
-             <Link
-              href={article.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              Read Original Article <ArrowUpRight className="h-4 w-4" />
-            </Link>
-           </div>
-           
-          <div className="mb-8 overflow-hidden rounded-lg relative aspect-video">
+      
+      {/* Magazine Article Layout */}
+      <article className="max-w-5xl mx-auto px-6 py-12">
+        {/* Article Header */}
+        <header className="mb-16">
+          <div className="flex items-center gap-4 mb-8">
+            <Badge variant="outline" className="px-3 py-1 text-sm font-medium border-black text-black">
+              {article.category}
+            </Badge>
+            <span className="text-sm text-gray-600 font-medium">{article.source}</span>
+            <div className="flex items-center gap-1 text-sm text-gray-500">
+              <Clock className="h-3 w-3" />
+              <span>5 min read</span>
+            </div>
+          </div>
+          
+          <h1 
+            className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 text-black"
+            style={{ 
+              fontFamily: '"Inter", "Helvetica Neue", sans-serif',
+              fontWeight: '800',
+              letterSpacing: '-0.02em'
+            }}
+          >
+            {article.title}
+          </h1>
+          
+          <p className="text-xl text-gray-700 leading-relaxed mb-8 max-w-3xl">
+            {article.reason}
+          </p>
+          
+          <Link
+            href={article.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm font-medium text-black hover:text-gray-600 transition-colors border-b border-black hover:border-gray-600"
+          >
+            Read Original Source <ArrowUpRight className="h-4 w-4" />
+          </Link>
+        </header>
+
+        {/* Hero Image */}
+        <div className="mb-16">
+          <div className="relative aspect-[3/2] overflow-hidden bg-gray-100">
             <Image
               src={article.imageUrl || placeholderImage}
               alt={article.title}
               className="object-cover"
-              data-ai-hint="news headline"
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 896px"
             />
           </div>
+        </div>
 
-          <div className="space-y-8">
-            <div className="prose prose-lg prose-slate dark:prose-invert max-w-none">
-              {briefingParagraphs.map((p, i) => (
-                <p key={`briefing-${i}`}>{p}</p>
-              ))}
-            </div>
-
-            {editorsNoteParagraphs && editorsNoteParagraphs.length > 0 && (
-              <Card className="bg-secondary/50">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl font-headline">
-                    <Newspaper className="h-5 w-5" />
-                    Editor's Note
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                  {editorsNoteParagraphs.map((p, i) => (
-                    <p key={`note-${i}`}>{p}</p>
-                  ))}
-                </CardContent>
-              </Card>
-            )}
-
-            {article.analysis.povCrossfire && (
-              <Card className="bg-primary/5 dark:bg-primary/10 border-primary/20">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl font-headline">
-                    <GitCompareArrows className="h-5 w-5" />
-                    POV Crossfire
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="prose prose-slate dark:prose-invert max-w-none">
-                        {povCrossfireAnalysisParagraphs?.map((p: string, i: number) => (
-                            <p key={`crossfire-${i}`}>{p}</p>
-                        ))}
-                    </div>
-                    <div>
-                        <h4 className="font-semibold text-sm mb-2 mt-4">Compared Articles:</h4>
-                        <ul className="list-none space-y-2">
-                            {article.analysis.povCrossfire.comparedArticles?.map((compArticle: any, i: number) => (
-                                <li key={i} className="text-sm text-muted-foreground border-l-2 pl-3 border-primary/30">
-                                    <span className="font-medium text-foreground">{compArticle.title}</span>
-                                    <span className="text-xs"> — {compArticle.source}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {article.analysis.keyFigures && article.analysis.keyFigures.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl font-headline">
-                    <Users className="h-5 w-5" />
-                    Key Figures
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {article.analysis.keyFigures.map((figure: any) => (
-                    <div key={figure.name}>
-                      <h3 className="font-semibold">{figure.name}</h3>
-                      <p className="text-muted-foreground mt-1 prose prose-sm">{figure.profile}</p>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            )}
-            
-            {article.analysis.timeline && article.analysis.timeline.length > 0 && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-xl font-headline">
-                            <CalendarClock className="h-5 w-5" />
-                            Event Timeline
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="relative pl-6">
-                            <div className="absolute left-[1px] top-1 h-full w-0.5 bg-border -translate-x-1/2"></div>
-                            {article.analysis.timeline.map((item: any, index: number) => (
-                                <div key={index} className="relative flex items-start pb-8 last:pb-0">
-                                    <div className="absolute left-[1px] top-1.5 h-3 w-3 rounded-full bg-primary -translate-x-1/2 border-4 box-content border-background"></div>
-                                    <div className="pl-8">
-                                        <p className="font-semibold text-sm">{item.date}</p>
-                                        <p className="text-muted-foreground text-sm">{item.event}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            {article.analysis.financials && article.analysis.financials.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
-                  <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                          <CardTitle className="text-sm font-medium">Latest Revenue</CardTitle>
-                          <Scale className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                          <div className="text-2xl font-bold">{article.analysis.financials[0].revenue}</div>
-                          <p className="text-xs text-muted-foreground">{article.analysis.financials[0].change} from last quarter</p>
-                      </CardContent>
-                  </Card>
-                  <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                          <CardTitle className="text-sm font-medium">Latest Profit</CardTitle>
-                          <BarChartBig className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                          <div className="text-2xl font-bold">{article.analysis.financials[0].profit}</div>
-                          <p className="text-xs text-muted-foreground">Latest reported quarter</p>
-                      </CardContent>
-                  </Card>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+          {/* Main Article Content */}
+          <div className="lg:col-span-8">
+            {/* Briefing Section */}
+            <section className="mb-16">
+              <h2 
+                className="text-2xl font-bold mb-6 text-black"
+                style={{ 
+                  fontFamily: '"Inter", "Helvetica Neue", sans-serif',
+                  fontWeight: '700'
+                }}
+              >
+                Analysis
+              </h2>
+              <div className="prose prose-lg max-w-none">
+                {briefingParagraphs.map((p: string, i: number) => (
+                  <p key={`briefing-${i}`} className="text-gray-800 leading-relaxed mb-6 text-lg">
+                    {p}
+                  </p>
+                ))}
               </div>
+            </section>
+
+            {/* Editor's Note */}
+            {editorsNoteParagraphs && editorsNoteParagraphs.length > 0 && (
+              <section className="mb-16 border-l-4 border-black pl-8">
+                <h3 
+                  className="text-xl font-bold mb-4 text-black"
+                  style={{ 
+                    fontFamily: '"Inter", "Helvetica Neue", sans-serif',
+                    fontWeight: '700'
+                  }}
+                >
+                  Editor's Perspective
+                </h3>
+                <div className="space-y-4">
+                  {editorsNoteParagraphs.map((p: string, i: number) => (
+                    <p key={`note-${i}`} className="text-gray-700 leading-relaxed">
+                      {p}
+                    </p>
+                  ))}
+                </div>
+              </section>
             )}
 
-            {article.analysis.marketSnapshot && (
-              <Card>
-                  <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-xl font-headline">
-                          <Briefcase className="h-5 w-5" />
-                          Market Snapshot
-                      </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                      <div>
-                          <h3 className="flex items-center gap-2 font-semibold"><TrendingUp className="h-4 w-4" /> Sector Outlook</h3>
-                          <p className="text-muted-foreground mt-1">{article.analysis.marketSnapshot.sectorOutlook}</p>
-                      </div>
-                      <div>
-                          <h3 className="flex items-center gap-2 font-semibold"><Users className="h-4 w-4" /> Key Competitors</h3>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                              {article.analysis.marketSnapshot.keyCompetitors.map((c: string) => <Badge key={c} variant="outline">{c}</Badge>)}
-                          </div>
-                      </div>
-                      <div>
-                          <h3 className="flex items-center gap-2 font-semibold"><Star className="h-4 w-5" /> Analyst's Take</h3>
-                          <p className="text-muted-foreground mt-1 prose prose-sm">{article.analysis.marketSnapshot.analystsTake}</p>
-                      </div>
-                  </CardContent>
-              </Card>
+            {/* Global Perspectives */}
+            {article.analysis.povCrossfire && (
+              <section className="mb-16">
+                <h3 
+                  className="text-xl font-bold mb-6 text-black"
+                  style={{ 
+                    fontFamily: '"Inter", "Helvetica Neue", sans-serif',
+                    fontWeight: '700'
+                  }}
+                >
+                  Global Perspectives
+                </h3>
+                <div className="bg-gray-50 p-8 rounded-none">
+                  <div className="space-y-4 mb-6">
+                    {article.analysis.povCrossfire.analysis?.split('\n').filter((p: string) => p.trim() !== '').map((p: string, i: number) => (
+                      <p key={`crossfire-${i}`} className="text-gray-800 leading-relaxed">
+                        {p}
+                      </p>
+                    ))}
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold text-sm mb-3 text-black uppercase tracking-wide">
+                      Related Coverage
+                    </h4>
+                    <div className="space-y-2">
+                      {article.analysis.povCrossfire.comparedArticles?.map((compArticle: any, i: number) => (
+                        <div key={i} className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
+                          <span className="text-gray-800 font-medium">{compArticle.title}</span>
+                          <span className="text-sm text-gray-500">{compArticle.source}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </section>
             )}
 
-            {article.analysis.outlook && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl font-headline">
-                    <LineChart className="h-5 w-5" />
-                    Future Outlook
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground prose prose-sm">{article.analysis.outlook}</p>
-                </CardContent>
-              </Card>
+            {/* Public Sentiment Analysis Section */}
+            {article.analysis.publicSentiment && (
+              <section className="mb-16">
+                <h2 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-200">
+                  PUBLIC SENTIMENT ANALYSIS
+                </h2>
+                
+                <div className="mb-8">
+                  <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                    {article.analysis.publicSentiment.summary}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {article.analysis.publicSentiment.platforms.map((platform, index) => (
+                    <div key={index} className="bg-gray-50 p-6 rounded-lg">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-bold text-lg">{platform.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <div className={`w-3 h-3 rounded-full ${
+                            platform.sentiment === 'Optimistic' || platform.sentiment === 'Enthusiastic' || platform.sentiment === 'Hopeful' || platform.sentiment === 'Inspiring' ? 'bg-green-400' :
+                            platform.sentiment === 'Mixed' || platform.sentiment === 'Interested' || platform.sentiment === 'Analytical' || platform.sentiment === 'Professional' || platform.sentiment === 'Supportive' ? 'bg-yellow-400' :
+                            'bg-red-400'
+                          }`}></div>
+                          <span className="text-sm font-medium text-gray-600">
+                            {platform.sentiment}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-gray-600">Sentiment Score</span>
+                          <span className="font-bold">{platform.percentage}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full ${
+                              platform.percentage >= 70 ? 'bg-green-400' :
+                              platform.percentage >= 50 ? 'bg-yellow-400' :
+                              'bg-red-400'
+                            }`}
+                            style={{ width: `${platform.percentage}%` }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      <blockquote className="text-sm text-gray-600 italic border-l-4 border-gray-300 pl-4">
+                        "{platform.sample}"
+                      </blockquote>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-8 p-6 bg-blue-50 rounded-lg">
+                  <h4 className="font-bold mb-3 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    AI ANALYSIS METHODOLOGY
+                  </h4>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Our AI system analyzes thousands of comments, posts, and discussions from major online communities worldwide. 
+                    Sentiment analysis is performed using advanced natural language processing, considering cultural context, 
+                    linguistic nuances, and platform-specific communication patterns. Data is updated every 6 hours to reflect 
+                    real-time public opinion trends.
+                  </p>
+                </div>
+              </section>
             )}
 
-            {article.analysis.financials && article.analysis.financials.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl font-headline">
-                    <TableIcon className="h-5 w-5" />
-                    Financial History
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Period</TableHead>
-                          <TableHead>Revenue</TableHead>
-                          <TableHead>Profit</TableHead>
-                          <TableHead>Change</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {article.analysis.financials.map((item: any) => (
-                          <TableRow key={item.period}>
-                            <TableCell className="font-medium">{item.period}</TableCell>
-                            <TableCell>{item.revenue}</TableCell>
-                            <TableCell>{item.profit}</TableCell>
-                            <TableCell>{item.change}</TableCell>
-                          </TableRow>
+            {/* Financial Data Section */}
+            {article.analysis.financials && (
+              <section className="mb-16">
+                <h2 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-200">
+                  FINANCIAL DATA
+                </h2>
+                
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b-2 border-gray-200">
+                        <th className="text-left py-4 px-2 font-bold">PERIOD</th>
+                        <th className="text-left py-4 px-2 font-bold">REVENUE</th>
+                        <th className="text-left py-4 px-2 font-bold">PROFIT</th>
+                        <th className="text-left py-4 px-2 font-bold">CHANGE</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {article.analysis.financials.map((data, index) => (
+                        <tr key={index} className="border-b border-gray-100">
+                          <td className="py-4 px-2 font-medium">{data.period}</td>
+                          <td className="py-4 px-2">{data.revenue}</td>
+                          <td className="py-4 px-2">{data.profit}</td>
+                          <td className={`py-4 px-2 font-bold ${
+                            data.change.startsWith('+') ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {data.change}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {article.analysis.marketSnapshot && (
+                  <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-gray-50 p-6 rounded-lg">
+                      <h4 className="font-bold mb-2">KEY COMPETITORS</h4>
+                      <ul className="text-sm text-gray-600">
+                        {article.analysis.marketSnapshot.keyCompetitors.map((competitor, index) => (
+                          <li key={index} className="mb-1">• {competitor}</li>
                         ))}
-                      </TableBody>
-                    </Table>
-                </CardContent>
-              </Card>
+                      </ul>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-6 rounded-lg">
+                      <h4 className="font-bold mb-2">SECTOR OUTLOOK</h4>
+                      <p className="text-sm text-gray-600 leading-relaxed">
+                        {article.analysis.marketSnapshot.sectorOutlook}
+                      </p>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-6 rounded-lg">
+                      <h4 className="font-bold mb-2">ANALYSTS' TAKE</h4>
+                      <p className="text-sm text-gray-600 leading-relaxed">
+                        {article.analysis.marketSnapshot.analystsTake}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </section>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <aside className="lg:col-span-4">
+            {/* Key People */}
+            {article.analysis.keyFigures && article.analysis.keyFigures.length > 0 && (
+              <section className="mb-12">
+                <h3 
+                  className="text-lg font-bold mb-6 text-black flex items-center gap-2"
+                  style={{ 
+                    fontFamily: '"Inter", "Helvetica Neue", sans-serif',
+                    fontWeight: '700'
+                  }}
+                >
+                  <User className="h-4 w-4" />
+                  Key People
+                </h3>
+                <div className="space-y-6">
+                  {article.analysis.keyFigures.map((figure: any) => (
+                    <div key={figure.name} className="border-b border-gray-200 pb-6 last:border-b-0">
+                      <h4 className="font-semibold text-black mb-2">{figure.name}</h4>
+                      <p className="text-sm text-gray-600 leading-relaxed">{figure.profile}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
             )}
 
-            <FinancialChart data={chartData} />
+            {/* Timeline */}
+            {article.analysis.timeline && article.analysis.timeline.length > 0 && (
+              <section className="mb-12">
+                <h3 
+                  className="text-lg font-bold mb-6 text-black flex items-center gap-2"
+                  style={{ 
+                    fontFamily: '"Inter", "Helvetica Neue", sans-serif',
+                    fontWeight: '700'
+                  }}
+                >
+                  <Calendar className="h-4 w-4" />
+                  Timeline
+                </h3>
+                <div className="space-y-4">
+                  {article.analysis.timeline.map((item: any, index: number) => (
+                    <div key={index} className="flex gap-4">
+                      <div className="w-20 flex-shrink-0">
+                        <span className="text-sm font-medium text-black">{item.date}</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-700">{item.event}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
-          </div>
-        </article>
-      </main>
+            {/* Market Snapshot */}
+            {article.analysis.marketSnapshot && (
+              <section className="mb-12">
+                <h3 
+                  className="text-lg font-bold mb-6 text-black flex items-center gap-2"
+                  style={{ 
+                    fontFamily: '"Inter", "Helvetica Neue", sans-serif',
+                    fontWeight: '700'
+                  }}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  Market Insight
+                </h3>
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-semibold text-black mb-2">Sector Outlook</h4>
+                    <p className="text-sm text-gray-700 leading-relaxed">{article.analysis.marketSnapshot.sectorOutlook}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-black mb-2">Key Competitors</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {article.analysis.marketSnapshot.keyCompetitors.map((c: string) => (
+                        <Badge key={c} variant="outline" className="text-xs border-gray-300 text-gray-700">
+                          {c}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-black mb-2">Analyst's Take</h4>
+                    <p className="text-sm text-gray-700 leading-relaxed">{article.analysis.marketSnapshot.analystsTake}</p>
+                  </div>
+                </div>
+              </section>
+            )}
+          </aside>
+        </div>
+
+        {/* Future Outlook */}
+        {article.analysis.outlook && (
+          <section className="mt-16 pt-16 border-t border-gray-200">
+            <h2 
+              className="text-2xl font-bold mb-6 text-black"
+              style={{ 
+                fontFamily: '"Inter", "Helvetica Neue", sans-serif',
+                fontWeight: '700'
+              }}
+            >
+              Future Outlook
+            </h2>
+            <p className="text-lg text-gray-700 leading-relaxed max-w-4xl">
+              {article.analysis.outlook}
+            </p>
+          </section>
+        )}
+      </article>
     </div>
   );
 }

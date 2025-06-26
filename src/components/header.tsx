@@ -2,16 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Logo } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { CATEGORIES } from '@/lib/mock-data';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 export function Header() {
   const searchParams = useSearchParams();
@@ -26,51 +18,39 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-card/80 text-foreground supports-[backdrop-filter]:bg-card/60 supports-[backdrop-filter]:backdrop-blur-xl">
-      <div className="container flex h-16 items-center">
-        <div className="mr-auto flex items-center">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo className="h-8 w-8 text-primary" />
-            <span className="font-bold font-jp sm:inline-block text-2xl">
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200">
+      <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-6">
+        <div className="flex items-center">
+          <Link href="/" className="flex items-center">
+            <span 
+              className="font-bold text-2xl text-black"
+              style={{ 
+                fontFamily: '"Hiragino Kaku Gothic ProN", "Hiragino Sans", "BIZ UDPGothic", "Meiryo", sans-serif',
+                fontWeight: '900'
+              }}
+            >
               ニュースQ
             </span>
           </Link>
         </div>
 
         {showNav && (
-          <>
-            <nav className="hidden md:flex items-center space-x-1">
-              {CATEGORIES.map((category) => (
-                <Link
-                  key={category.id}
-                  href={category.id === 'all' ? '/news' : `/news?category=${category.id}`}
-                  className={cn(
-                    'px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                    currentCategory === category.id
-                      ? 'bg-secondary text-secondary-foreground'
-                      : 'hover:bg-secondary/50'
-                  )}
-                >
-                  {category.name}
-                </Link>
-              ))}
-            </nav>
-
-            <div className="md:hidden">
-              <Select value={currentCategory} onValueChange={onCategoryChange}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </>
+          <nav className="flex items-center space-x-8">
+            {CATEGORIES.map((category) => (
+              <Link
+                key={category.id}
+                href={category.id === 'all' ? '/news' : `/news?category=${category.id}`}
+                className={cn(
+                  'text-sm font-medium transition-colors relative',
+                  currentCategory === category.id
+                    ? 'text-black after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-0.5 after:bg-black'
+                    : 'text-gray-600 hover:text-black'
+                )}
+              >
+                {category.name}
+              </Link>
+            ))}
+          </nav>
         )}
       </div>
     </header>

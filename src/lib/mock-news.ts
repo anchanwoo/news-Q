@@ -2,126 +2,239 @@
 export const mockNews = [
   {
     id: '1',
-    title: 'AI 기술의 혁신적 발전이 가져올 미래 변화',
-    description: '인공지능 기술이 빠르게 발전하면서 다양한 산업 분야에서 혁신적인 변화가 일어나고 있습니다.',
+    title: 'Revolutionary AI Breakthrough Transforms Global Industries',
+    description: 'Artificial intelligence technology is rapidly advancing, bringing innovative changes across various industrial sectors worldwide.',
     category: 'Technology',
     source: 'Tech News',
     link: '#',
     imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     slug: 'ai-innovation-future',
     relevanceScore: 95,
-    reason: 'AI 기술의 급속한 발전과 산업 전반에 미치는 영향이 매우 중요한 글로벌 이슈입니다.',
+    reason: 'The rapid advancement of AI technology and its impact across industries represents a crucial global issue.',
     analysis: {
-      briefing: `AI 기술의 급속한 발전으로 인해 전 세계적으로 디지털 혁신이 가속화되고 있습니다.
+      briefing: `The rapid advancement of AI technology is accelerating digital innovation worldwide.
 
-특히 ChatGPT와 같은 대화형 AI부터 자율주행, 의료 진단, 금융 분석에 이르기까지 AI의 응용 범위가 급격히 확장되고 있습니다.
+Particularly from conversational AI like ChatGPT to autonomous driving, medical diagnostics, and financial analysis, the application scope of AI is expanding dramatically.
 
-이러한 변화는 단순히 기술적 진보를 넘어서 사회 전반의 구조적 변화를 이끌어내고 있으며, 향후 10년간 인류의 삶을 근본적으로 바꿀 것으로 전망됩니다.`,
-      editorsNote: `이번 AI 기술 발전은 특히 자동화, 데이터 분석, 그리고 개인화 서비스 분야에서 두드러진 성과를 보이고 있습니다.
+These changes go beyond mere technological progress, driving structural changes throughout society, and are expected to fundamentally transform human life over the next decade.`,
+      editorsNote: `This AI technological advancement is showing particularly notable results in automation, data analysis, and personalized services.
 
-하지만 동시에 일자리 대체, 개인정보 보호, AI 윤리 등의 새로운 과제들도 함께 대두되고 있어 기술 발전과 사회적 준비가 균형있게 이루어져야 할 시점입니다.
+However, new challenges such as job displacement, privacy protection, and AI ethics are also emerging, requiring a balanced approach between technological advancement and social preparation.
 
-특히 한국은 반도체와 IT 인프라 강국으로서 AI 혁신의 중심 역할을 할 수 있는 좋은 기회를 맞고 있습니다.`,
+Especially for Korea, as a semiconductor and IT infrastructure powerhouse, this presents a great opportunity to play a central role in AI innovation.`,
       timeline: [
-        { date: '2022-11', event: 'ChatGPT 출시로 생성형 AI 대중화 시작' },
-        { date: '2023-03', event: 'GPT-4 발표, 멀티모달 AI 시대 개막' },
-        { date: '2023-07', event: '구글 Bard, 마이크로소프트 Copilot 등 경쟁 가속화' },
-        { date: '2024-01', event: '기업용 AI 솔루션 본격 상용화' },
-        { date: '2024-12', event: '실시간 AI 에이전트 상용화' }
+        { date: 'Nov 2022', event: 'ChatGPT launch begins generative AI popularization' },
+        { date: 'Mar 2023', event: 'GPT-4 announcement opens multimodal AI era' },
+        { date: 'Jul 2023', event: 'Competition accelerates with Google Bard, Microsoft Copilot' },
+        { date: 'Jan 2024', event: 'Enterprise AI solutions enter full commercialization' },
+        { date: 'Dec 2024', event: 'Real-time AI agents commercialized' }
       ],
       keyFigures: [
         {
-          name: '샘 알트만 (Sam Altman)',
-          profile: 'OpenAI의 CEO로서 ChatGPT를 통해 생성형 AI 혁명을 이끌고 있는 인물입니다. 그는 AI 기술의 안전한 개발과 인류에게 도움이 되는 AI 구현을 목표로 하고 있으며, 현재 전 세계 AI 정책과 발전 방향에 큰 영향을 미치고 있습니다.'
+          name: 'Sam Altman',
+          profile: 'CEO of OpenAI, leading the generative AI revolution through ChatGPT. He aims for safe AI development and implementation that benefits humanity, currently having significant influence on global AI policy and development direction.'
         },
         {
-          name: '순다르 피차이 (Sundar Pichai)',
-          profile: '구글의 CEO로서 AI 퍼스트 전략을 추진하며 구글의 AI 기술 발전을 이끌고 있습니다. Bard, Gemini 등의 AI 모델 개발을 총괄하며, AI 기술의 민주화와 접근성 향상에 중점을 두고 있습니다.'
+          name: 'Sundar Pichai',
+          profile: 'CEO of Google, driving AI-first strategy and leading Google\'s AI technology development. He oversees development of AI models like Bard and Gemini, focusing on democratization and improved accessibility of AI technology.'
         }
       ],
       povCrossfire: {
-        analysis: `미국 언론은 AI 기술 발전의 경제적 기회와 혁신에 초점을 맞추고 있는 반면, 유럽 언론은 AI 규제와 윤리적 측면을 더 강조하고 있습니다.
+        analysis: `American media focuses on economic opportunities and innovation from AI technological advancement, while European media emphasizes AI regulation and ethical aspects.
 
-중국 언론은 AI 기술 자립과 국가 경쟁력 강화 측면에서 보도하고 있으며, 한국 언론은 글로벌 AI 경쟁에서의 한국의 위치와 대응 전략에 집중하고 있습니다.
+Chinese media reports from the perspective of AI technological independence and national competitiveness enhancement, while Korean media concentrates on Korea\'s position and response strategies in global AI competition.
 
-이러한 관점의 차이는 각국의 AI 정책과 발전 전략의 차이를 반영하고 있습니다.`,
+These differences in perspective reflect the differences in each country\'s AI policies and development strategies.`,
         comparedArticles: [
           { title: 'AI Revolution Drives Economic Growth', source: 'Wall Street Journal' },
           { title: 'EU Pushes for Stricter AI Regulations', source: 'Financial Times' },
-          { title: '中 AI 자립 기술 개발 가속화', source: 'China Daily' }
+          { title: 'China Accelerates Independent AI Technology Development', source: 'China Daily' }
         ]
+      },
+      publicSentiment: {
+        platforms: [
+          { name: 'Reddit r/technology', sentiment: 'Optimistic', percentage: 72, sample: 'Amazing how fast AI is evolving. Can\'t wait to see what\'s next!' },
+          { name: 'Twitter/X', sentiment: 'Mixed', percentage: 58, sample: 'AI progress is exciting but also scary. We need better regulations.' },
+          { name: 'Hacker News', sentiment: 'Analytical', percentage: 81, sample: 'The technical implementation is impressive, but scalability remains a challenge.' },
+          { name: 'LinkedIn', sentiment: 'Professional', percentage: 85, sample: 'Companies need to start preparing their workforce for AI integration now.' }
+        ],
+        summary: 'Public opinion shows cautious optimism about AI advancement, with tech communities more enthusiastic than general public. Main concerns center around job security and ethical implications.'
       }
     }
   },
   {
     id: '2',
-    title: '글로벌 경제 동향과 한국 시장에 미치는 영향',
-    description: '최근 글로벌 경제 변화가 한국 경제에 미치는 영향을 분석해봅니다.',
+    title: 'Global Economic Trends and Impact on Korean Markets',
+    description: 'Analyzing how recent global economic changes are affecting the Korean economy.',
     category: 'Business',
     source: 'Economic Times',
     link: '#',
     imageUrl: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     slug: 'global-economy-korea',
     relevanceScore: 88,
-    reason: '글로벌 경제 변화가 한국 경제에 미치는 직접적인 영향을 분석한 중요한 경제 뉴스입니다.',
+    reason: 'Important economic news analyzing the direct impact of global economic changes on the Korean economy.',
     analysis: {
-      briefing: `글로벌 공급망 재편과 인플레이션 압력이 한국 경제에 복합적인 영향을 미치고 있습니다.
+      briefing: `Global supply chain restructuring and inflationary pressures are having complex effects on the Korean economy.
 
-미중 무역 갈등의 장기화와 러시아-우크라이나 전쟁으로 인한 에너지 가격 상승이 주요 변수로 작용하고 있으며, 이는 한국의 수출 의존적 경제 구조에 직접적인 영향을 미치고 있습니다.
+The prolonged US-China trade conflict and rising energy prices due to the Russia-Ukraine war are acting as major variables, directly impacting Korea\'s export-dependent economic structure.
 
-특히 반도체, 자동차, 화학 등 한국의 주력 산업에서 원자재 조달과 수출 경로 다변화가 시급한 과제로 대두되고 있습니다.`,
-      editorsNote: `특히 반도체, 자동차, 화학 산업에서의 변화가 주목할 만합니다.
+Particularly in Korea\'s key industries such as semiconductors, automobiles, and chemicals, diversification of raw material procurement and export routes has emerged as an urgent task.`,
+      editorsNote: `Changes in the semiconductor, automotive, and chemical industries are particularly noteworthy.
 
-한국은 이러한 글로벌 변화에 대응하기 위해 공급망 다변화, 신시장 개척, 그리고 첨단 기술 투자 확대 등의 전략을 추진하고 있습니다.
+Korea is pursuing strategies such as supply chain diversification, new market development, and expanded investment in advanced technology to respond to these global changes.
 
-정부의 K-뉴딜 정책과 기업들의 디지털 전환 노력이 이러한 도전을 기회로 전환할 수 있는 핵심 요소가 될 것으로 분석됩니다.`,
+The government\'s K-New Deal policy and companies\' digital transformation efforts are analyzed as key factors that can turn these challenges into opportunities.`,
       financials: [
         { period: 'Q4 2024', revenue: '$1.2T', profit: '$150B', change: '+3.2%' },
         { period: 'Q3 2024', revenue: '$1.15T', profit: '$145B', change: '+2.8%' },
         { period: 'Q2 2024', revenue: '$1.1T', profit: '$140B', change: '+2.1%' }
       ],
       marketSnapshot: {
-        keyCompetitors: ['일본', '독일', '중국'],
-        sectorOutlook: '글로벌 경제 불확실성 속에서도 한국의 기술 경쟁력과 혁신 역량을 바탕으로 한 성장 가능성이 높게 평가되고 있습니다.',
-        analystsTake: '한국 경제는 단기적으로는 글로벌 경기 둔화의 영향을 받겠지만, 중장기적으로는 첨단 기술과 녹색 전환 투자를 통해 새로운 성장 동력을 확보할 것으로 전망됩니다.'
+        keyCompetitors: ['Japan', 'Germany', 'China'],
+        sectorOutlook: 'Despite global economic uncertainty, Korea\'s growth potential based on technological competitiveness and innovation capacity is highly evaluated.',
+        analystsTake: 'The Korean economy is expected to be affected by global economic slowdown in the short term, but in the medium to long term, it is projected to secure new growth engines through investment in advanced technology and green transition.'
       },
-      outlook: '2025년 한국 경제는 글로벌 경기 회복과 함께 점진적인 성장세를 보일 것으로 예상되며, 특히 AI, 바이오, 신재생 에너지 분야에서의 투자 확대가 새로운 성장 엔진 역할을 할 것으로 전망됩니다.'
+      outlook: 'The Korean economy in 2025 is expected to show gradual growth along with global economic recovery, with investment expansion in AI, bio, and renewable energy sectors particularly expected to serve as new growth engines.',
+      publicSentiment: {
+        platforms: [
+          { name: 'Naver Cafe Economics', sentiment: 'Concerned', percentage: 45, sample: '경제 불확실성이 계속되고 있어 걱정이 많습니다.' },
+          { name: 'DC Inside Economy Gallery', sentiment: 'Pessimistic', percentage: 38, sample: '반도체 업계 전망이 어둡다. 투자 조심해야 할 때.' },
+          { name: 'Blind (Korean)', sentiment: 'Cautious', percentage: 52, sample: 'IT업계도 영향 받을 것 같은데 준비가 필요함.' }
+        ],
+        summary: 'Korean online communities show heightened concern about economic uncertainty, particularly regarding semiconductor and tech sectors. Sentiment is more cautious compared to global optimism.'
+      }
     }
   },
   {
     id: '3',
-    title: '기후 변화 대응을 위한 국제 협력 강화',
-    description: '전 세계가 기후 변화에 대응하기 위한 새로운 협력 방안을 모색하고 있습니다.',
+    title: 'Strengthening International Cooperation for Climate Change Response',
+    description: 'The world is exploring new cooperation measures to respond to climate change.',
     category: 'Politics',
     source: 'Global News',
     link: '#',
     imageUrl: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     slug: 'climate-change-cooperation',
     relevanceScore: 82,
-    reason: '기후 변화는 전 지구적 문제로 국제 협력이 필수적인 중요한 정치적 이슈입니다.',
+    reason: 'Climate change is a global issue where international cooperation is essential, making it an important political issue.',
     analysis: {
-      briefing: `파리 기후협정 이후 각국의 탄소 중립 목표 달성을 위한 구체적인 실행 방안이 논의되고 있습니다.
+      briefing: `Since the Paris Climate Agreement, specific implementation measures for achieving each country\'s carbon neutrality goals are being discussed.
 
-특히 COP28에서 합의된 화석연료 전환 로드맵을 실현하기 위한 국제적 협력 체계 구축이 핵심 과제로 부상하고 있습니다.
+Particularly, building an international cooperation system to realize the fossil fuel transition roadmap agreed upon at COP28 has emerged as a key task.
 
-개발도상국의 녹색 전환을 지원하기 위한 기후 기금 확대와 기술 이전 방안도 중요한 논의 주제가 되고 있습니다.`,
-      editorsNote: `재생에너지 투자 확대와 탄소세 도입 등이 주요 이슈로 부상하고 있습니다.
+Expanding climate funds and technology transfer measures to support developing countries\' green transition have also become important discussion topics.`,
+      editorsNote: `Renewable energy investment expansion and carbon tax introduction are emerging as major issues.
 
-각국이 제시한 NDC(국가별 기여방안) 목표 달성을 위해서는 현재보다 훨씬 강화된 정책과 투자가 필요한 상황입니다.
+To achieve the NDC (Nationally Determined Contributions) targets presented by each country, much stronger policies and investments than current levels are needed.
 
-특히 한국은 2050 탄소중립 목표 달성을 위해 에너지 전환, 산업 구조 개편, 그린 뉴딜 투자 등 종합적인 접근이 필요한 시점입니다.`,
+Particularly for Korea, a comprehensive approach including energy transition, industrial structure reform, and Green New Deal investment is needed to achieve the 2050 carbon neutrality goal.`,
       timeline: [
-        { date: '2015-12', event: '파리 기후협정 체결' },
-        { date: '2021-11', event: 'COP26 글래스고 기후 합의' },
-        { date: '2023-12', event: 'COP28 화석연료 전환 합의' },
-        { date: '2024-06', event: '한국 K-택소노미 최종안 발표' }
+        { date: 'Dec 2015', event: 'Paris Climate Agreement signed' },
+        { date: 'Nov 2021', event: 'COP26 Glasgow Climate Pact' },
+        { date: 'Dec 2023', event: 'COP28 fossil fuel transition agreement' },
+        { date: 'Jun 2024', event: 'Korea K-Taxonomy final plan announced' }
       ],
       keyFigures: [
         {
-          name: '안토니우 구테흐스 (António Guterres)',
-          profile: '유엔 사무총장으로서 기후 변화 대응을 위한 국제 협력을 주도하고 있습니다. 그는 기후 위기를 인류 최대의 도전으로 규정하고, 각국 정부와 기업의 더욱 적극적인 행동을 촉구하고 있습니다.'
+          name: 'António Guterres',
+          profile: 'UN Secretary-General leading international cooperation for climate change response. He defines the climate crisis as humanity\'s greatest challenge and urges more active action from governments and businesses worldwide.'
         }
       ]
+    }
+  },
+  {
+    id: '4',
+    title: 'Japan\'s New Digital Currency Initiative Sparks Regional Interest',
+    description: 'Japan announces comprehensive digital yen pilot program, influencing Asian financial markets.',
+    category: 'Business',
+    source: 'Nikkei Asia',
+    link: '#',
+    imageUrl: 'https://images.unsplash.com/photo-1560472355-536de3962603?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    slug: 'japan-digital-currency',
+    relevanceScore: 79,
+    reason: 'Japan\'s digital currency initiative could reshape Asian financial landscape and influence global CBDC adoption.',
+    analysis: {
+      briefing: `Japan\'s central bank announces a major digital yen pilot program, marking a significant step in the country\'s digital transformation strategy.
+
+The initiative aims to modernize Japan\'s financial infrastructure while maintaining the stability and security that characterizes the nation\'s banking system.
+
+This move positions Japan as a leader in Asian digital currency development, potentially influencing neighboring countries\' financial policies.`,
+      editorsNote: `The timing of this announcement is particularly strategic, as Japan seeks to maintain its financial competitiveness in an increasingly digital world.
+
+With China\'s digital yuan already in circulation and South Korea exploring similar initiatives, Japan\'s entry into the CBDC space could accelerate regional adoption.
+
+The pilot program\'s success could serve as a model for other developed nations considering digital currency implementation.`,
+      publicSentiment: {
+        platforms: [
+          { name: '2channel Finance', sentiment: 'Skeptical', percentage: 43, sample: 'デジタル円は本当に必要？現金の方が安全だと思う' },
+          { name: 'Yahoo Finance Japan', sentiment: 'Interested', percentage: 67, sample: 'キャッシュレス社会への重要な一歩。期待している' },
+          { name: 'Mixi Finance Community', sentiment: 'Cautious', percentage: 55, sample: 'プライバシーの問題が心配。もっと詳細が知りたい' }
+        ],
+        summary: 'Japanese online communities show mixed reactions, with younger demographics more supportive while older users express concerns about privacy and the necessity of digital currency.'
+      }
+    }
+  },
+  {
+    id: '5',
+    title: 'European Space Agency Announces Mars Colony Blueprint',
+    description: 'ESA reveals detailed plans for sustainable human settlement on Mars by 2040.',
+    category: 'Technology',
+    source: 'Space Today',
+    link: '#',
+    imageUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    slug: 'mars-colony-blueprint',
+    relevanceScore: 75,
+    reason: 'Mars colonization represents humanity\'s next frontier and could revolutionize space exploration.',
+    analysis: {
+      briefing: `The European Space Agency unveils an ambitious roadmap for establishing a self-sustaining human colony on Mars within the next two decades.
+
+The blueprint includes revolutionary life support systems, advanced habitat construction using Martian resources, and sustainable food production methods.
+
+This initiative represents a collaborative effort between European nations and could mark a new era in human space exploration.`,
+      editorsNote: `While the timeline appears ambitious, ESA\'s systematic approach and proven track record in space missions lend credibility to the proposal.
+
+The project\'s emphasis on sustainability and resource utilization demonstrates lessons learned from Earth\'s environmental challenges.
+
+Success could position Europe as the leader in interplanetary colonization, with significant implications for future space commerce and exploration.`,
+      publicSentiment: {
+        platforms: [
+          { name: 'Reddit r/space', sentiment: 'Enthusiastic', percentage: 89, sample: 'This is exactly what humanity needs! Mars here we come!' },
+          { name: 'ESA Forum', sentiment: 'Analytical', percentage: 76, sample: 'The technical challenges are immense, but the engineering approach looks solid.' },
+          { name: 'Twitter Space Community', sentiment: 'Excited', percentage: 82, sample: 'Finally! A realistic timeline for Mars colonization. Can\'t wait to see this happen.' }
+        ],
+        summary: 'Space enthusiast communities worldwide show overwhelming excitement and support, with detailed technical discussions about feasibility and implementation challenges.'
+      }
+    }
+  },
+  {
+    id: '6',
+    title: 'Brazil\'s Amazon Reforestation Project Shows Remarkable Results',
+    description: 'Innovative technology and community involvement lead to 40% reduction in deforestation.',
+    category: 'Politics',
+    source: 'Environmental Post',
+    link: '#',
+    imageUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    slug: 'amazon-reforestation-success',
+    relevanceScore: 73,
+    reason: 'Amazon reforestation success offers hope for global climate action and biodiversity preservation.',
+    analysis: {
+      briefing: `Brazil\'s comprehensive Amazon reforestation initiative achieves unprecedented success, with deforestation rates dropping by 40% in targeted regions.
+
+The program combines satellite monitoring, drone surveillance, and community-based conservation efforts to protect and restore critical rainforest areas.
+
+International funding and indigenous community partnerships have been crucial to the project\'s success, offering a model for global conservation efforts.`,
+      editorsNote: `This achievement comes at a critical time when global climate commitments are under scrutiny and environmental protection faces political challenges.
+
+The project\'s success demonstrates that effective environmental policy can achieve measurable results when properly funded and implemented.
+
+The model could be replicated in other critical ecosystems worldwide, potentially accelerating global reforestation efforts.`,
+      publicSentiment: {
+        platforms: [
+          { name: 'Reddit r/environment', sentiment: 'Hopeful', percentage: 91, sample: 'Finally some good environmental news! This gives me hope for the future.' },
+          { name: 'Facebook Environmental Groups', sentiment: 'Supportive', percentage: 84, sample: 'This is what happens when we prioritize our planet. More countries need to follow Brazil\'s example.' },
+          { name: 'Instagram Eco Influencers', sentiment: 'Inspiring', percentage: 88, sample: 'Proof that we can reverse environmental damage when we work together! 🌱' }
+        ],
+        summary: 'Environmental communities worldwide celebrate the news as a rare positive development in climate action, with many calling for similar initiatives in their own countries.'
+      }
     }
   }
 ];

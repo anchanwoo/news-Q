@@ -1,8 +1,8 @@
 import type { Category, Region } from './types';
 
 export const FEEDS: Region[] = [
-  { id: 'USA', name: 'NYT', url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml' },
-  { id: 'World', name: 'BBC', url: 'https://feeds.bbci.co.uk/news/world/rss.xml' },
+  { id: 'USA', name: 'New York Times', url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml' },
+  { id: 'World', name: 'BBC World', url: 'https://feeds.bbci.co.uk/news/world/rss.xml' },
   { id: 'Business', name: 'Reuters Business', url: 'https://feeds.reuters.com/reuters/businessNews' },
   { id: 'Korea', name: 'Korea Herald', url: 'http://www.koreaherald.com/rss/02/020100000000.xml' },
   { id: 'China', name: 'China Daily', url: 'http://www.chinadaily.com.cn/rss/world_rss.xml' },
@@ -12,7 +12,8 @@ export const FEEDS: Region[] = [
 ];
 
 export const CATEGORIES: Category[] = [
-  { id: 'all', name: 'Top Stories' },
-  { id: 'Politics', name: 'Politics' },
-  { id: 'Business', name: 'Business' },
+  { id: 'all', name: 'All Stories', description: 'Complete editorial coverage' },
+  { id: 'technology', name: 'Technology', description: 'Innovation and digital transformation' },
+  { id: 'business', name: 'Business', description: 'Markets, finance, and economics' },
+  { id: 'politics', name: 'Politics', description: 'Global affairs and governance' },
 ];

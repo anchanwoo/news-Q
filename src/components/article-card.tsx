@@ -1,18 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { FilteredArticle } from '@/lib/types';
-import { slugify } from '@/lib/utils';
-import { ArrowRight } from 'lucide-react';
-import { AspectRatio } from '@radix-ui/react-aspect-ratio';
+import { ArrowUpRight, Clock } from 'lucide-react';
 
 export function ArticleCard({
   article,
@@ -21,96 +11,130 @@ export function ArticleCard({
   article: FilteredArticle;
   isFeatured?: boolean;
 }) {
-  const linkParams = new URLSearchParams({
-    // We only need the slug now, as data will be fetched from cache
-  });
-
-  const linkHref = `/article/${article.slug}?${linkParams.toString()}`;
+  const linkHref = `/article/${article.slug}`;
   const placeholderImage = `https://placehold.co/1200x630.png`;
 
   if (isFeatured) {
     return (
-       <Card className="w-full overflow-hidden border-0 shadow-none rounded-none">
-        <div className="flex flex-col md:flex-row gap-8">
-            <div className="md:w-1/2">
-               <Link href={linkHref}>
-                  <AspectRatio ratio={16 / 9}>
-                    <Image
-                        src={article.imageUrl || placeholderImage}
-                        alt={article.title}
-                        className="rounded-lg object-cover"
-                        data-ai-hint="news illustration"
-                        fill
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                    />
-                 </AspectRatio>
-                </Link>
+      <div className="group cursor-pointer">
+        <Link href={linkHref}>
+          <div className="relative overflow-hidden">
+            {/* Hero Image */}
+            <div className="relative aspect-[3/2] mb-8 overflow-hidden">
+              <Image
+                src={article.imageUrl || placeholderImage}
+                alt={article.title}
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                data-ai-hint="magazine cover story"
+                fill
+                sizes="(max-width: 768px) 100vw, 80vw"
+                priority
+              />
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              
+              {/* Category badge */}
+              <div className="absolute top-6 left-6">
+                <Badge 
+                  variant="secondary" 
+                  className="bg-white/90 text-black font-medium px-3 py-1 text-sm backdrop-blur-sm"
+                >
+                  {article.category}
+                </Badge>
+              </div>
             </div>
-            <div className="flex-1 p-0 md:w-1/2">
-              <CardHeader className="p-0">
-                <div className="flex items-center gap-2 mb-4">
-                  <Badge variant="secondary" className="w-fit">
-                    {article.source}
-                  </Badge>
-                  <Badge variant="outline" className="w-fit">
-                    {article.category}
-                  </Badge>
+
+            {/* Content */}
+            <div className="space-y-6">
+              {/* Source and reading time */}
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <span className="font-medium text-primary">{article.source}</span>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  <span>5 min read</span>
                 </div>
-                <CardTitle className="font-headline text-3xl md:text-4xl lg:text-5xl leading-tight hover:underline">
-                  <Link href={linkHref}>
-                    {article.title}
-                  </Link>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 mt-4">
-                <CardDescription className="text-base md:text-lg text-foreground/80">
-                  {article.reason}
-                </CardDescription>
-              </CardContent>
-              <CardFooter className="p-0 mt-6">
-                <Link href={linkHref} className="text-sm font-semibold text-primary hover:underline flex items-center gap-1">
-                  Read the briefing <ArrowRight className="h-4 w-4" />
-                </Link>
-              </CardFooter>
+              </div>
+
+              {/* Title */}
+              <h1 
+                className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight group-hover:text-primary transition-colors duration-300"
+                style={{ 
+                  fontFamily: '"Inter", "Helvetica Neue", sans-serif',
+                  fontWeight: '800'
+                }}
+              >
+                {article.title}
+              </h1>
+
+              {/* Description */}
+              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl">
+                {article.reason}
+              </p>
+
+              {/* Read more */}
+              <div className="flex items-center gap-2 text-sm font-semibold text-primary group-hover:gap-3 transition-all duration-300">
+                <span>Read Full Analysis</span>
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+              </div>
             </div>
-        </div>
-      </Card>
-    )
+          </div>
+        </Link>
+      </div>
+    );
   }
 
   return (
-    <Card className="flex flex-col h-full overflow-hidden border-0 shadow-none rounded-none bg-transparent">
-      <Link href={linkHref} className='mb-4'>
-        <AspectRatio ratio={16 / 9}>
+    <div className="group cursor-pointer">
+      <Link href={linkHref}>
+        <article className="space-y-4">
+          {/* Image */}
+          <div className="relative aspect-[4/3] overflow-hidden bg-muted">
             <Image
-                src={article.imageUrl || placeholderImage}
-                alt={article.title}
-                className="rounded-lg object-cover"
-                data-ai-hint="news"
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              src={article.imageUrl || placeholderImage}
+              alt={article.title}
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              data-ai-hint="magazine article"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
-        </AspectRatio>
+          </div>
+
+          {/* Content */}
+          <div className="space-y-3">
+            {/* Meta */}
+            <div className="flex items-center justify-between">
+              <Badge variant="outline" className="text-xs font-medium">
+                {article.category}
+              </Badge>
+              <span className="text-xs text-muted-foreground font-medium">
+                {article.source}
+              </span>
+            </div>
+
+            {/* Title */}
+            <h2 
+              className="text-xl md:text-2xl font-bold leading-tight group-hover:text-primary transition-colors duration-300 line-clamp-3"
+              style={{ 
+                fontFamily: '"Inter", "Helvetica Neue", sans-serif',
+                fontWeight: '700'
+              }}
+            >
+              {article.title}
+            </h2>
+
+            {/* Description */}
+            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+              {article.reason}
+            </p>
+
+            {/* Read more indicator */}
+            <div className="flex items-center gap-1 text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <span>Read more</span>
+              <ArrowUpRight className="h-3 w-3" />
+            </div>
+          </div>
+        </article>
       </Link>
-      <CardHeader className="p-0">
-        <div className="flex items-center gap-2 mb-2">
-           <Badge variant="secondary" className="w-fit">{article.source}</Badge>
-           <Badge variant="outline" className="w-fit">{article.category}</Badge>
-        </div>
-        <CardTitle className="font-headline text-xl leading-snug hover:underline">
-           <Link href={linkHref}>
-            {article.title}
-          </Link>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex-grow p-0 mt-2">
-        <CardDescription className="text-sm">{article.reason}</CardDescription>
-      </CardContent>
-      <CardFooter className="p-0 mt-4">
-         <Link href={linkHref} className="text-xs font-semibold text-primary hover:underline flex items-center gap-1">
-            Read briefing <ArrowRight className="h-3 w-3" />
-        </Link>
-      </CardFooter>
-    </Card>
+    </div>
   );
 }
