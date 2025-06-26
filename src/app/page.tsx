@@ -2,24 +2,11 @@ import { Header } from '@/components/header';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getCachedArticles } from '@/services/firebase-service';
 
-export default async function LandingPage() {
-  const articles = await getCachedArticles();
-  let heroImageUrl = 'https://placehold.co/1920x1080.png';
-  let topHeadline = "The World's News, Through a New Lens";
-  let dataAiHint = "news world";
-
-  if (articles && articles.length > 0) {
-    const topArticle = articles[0];
-    topHeadline = topArticle.title;
-
-    // Use the real image from the article if it exists, otherwise use the placeholder.
-    if (topArticle.imageUrl) {
-      heroImageUrl = topArticle.imageUrl;
-      dataAiHint = "news headline";
-    }
-  }
+export default function LandingPage() {
+  const heroImageUrl = 'https://placehold.co/1920x1080.png';
+  const topHeadline = "Understand the World From Every Angle";
+  const dataAiHint = "global perspective";
 
   return (
     <div className="flex flex-col min-h-screen bg-black">
@@ -42,7 +29,7 @@ export default async function LandingPage() {
               {topHeadline}
             </h1>
             <p className="mt-4 text-lg md:text-xl text-white/90 max-w-2xl drop-shadow-sm">
-              Understand the world from every angle. AI-powered analysis of global news.
+              AI-powered analysis of global news, giving you a complete point of view.
             </p>
             <Button asChild size="lg" className="mt-8">
               <Link href="/news">Explore Today's Stories</Link>
