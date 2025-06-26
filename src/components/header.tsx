@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Logo } from '@/components/icons';
 import { cn } from '@/lib/utils';
-import { REGIONS } from '@/lib/types';
+import { FEEDS } from '@/lib/mock-data';
 import {
   Select,
   SelectContent,
@@ -26,26 +26,25 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-        <div className="mr-4 flex items-center">
+        <div className="mr-auto flex items-center">
           <Link href="/" className="flex items-center gap-2">
             <Logo className="h-8 w-8 text-primary" />
-            <span className="hidden font-bold font-headline sm:inline-block text-xl">
+            <span className="font-bold font-headline sm:inline-block text-2xl">
               Global Gazette
             </span>
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-1">
-          {REGIONS.map((region) => (
+        <div className="hidden md:flex items-center space-x-1">
+          {FEEDS.map((region) => (
             <Link
               key={region.id}
               href={`/?region=${region.id}`}
               className={cn(
                 'px-3 py-2 text-sm font-medium rounded-md transition-colors',
                 currentRegion === region.id
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:bg-muted/50'
+                  ? 'bg-secondary text-secondary-foreground'
+                  : 'text-muted-foreground hover:bg-secondary/50'
               )}
             >
               {region.name}
@@ -53,14 +52,13 @@ export function Header() {
           ))}
         </nav>
 
-        {/* Mobile Navigation */}
-        <div className="md:hidden ml-auto">
+        <div className="md:hidden">
           <Select value={currentRegion} onValueChange={onRegionChange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select a region" />
             </SelectTrigger>
             <SelectContent>
-              {REGIONS.map((region) => (
+              {FEEDS.map((region) => (
                 <SelectItem key={region.id} value={region.id}>
                   {region.name}
                 </SelectItem>

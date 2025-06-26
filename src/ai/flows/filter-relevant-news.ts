@@ -16,7 +16,7 @@ const FilterRelevantNewsInputSchema = z.object({
     z.object({
       title: z.string().describe('The title of the news article.'),
       description: z.string().describe('A short description or summary of the article.'),
-      link: z.string().describe('The URL of the news article.'),
+      link: z.string().url().describe('The URL of the news article.'),
       source: z.string().describe('The source or region of the news article (e.g., Korea, China, USA).'),
     })
   ).describe('An array of news articles from various RSS feeds.'),
@@ -27,37 +27,43 @@ const FilterRelevantNewsOutputSchema = z.array(
   z.object({
     title: z.string().describe('The title of the news article.'),
     description: z.string().describe('A short description or summary of the article.'),
-    link: z.string().describe('The URL of the news article.'),
+    link: z.string().url().describe('The URL of the news article.'),
     source: z.string().describe('The source or region of the news article.'),
     relevanceScore: z.number().describe('A score indicating the relevance and importance of the article (0-1).'),
-    reason: z.string().describe('The reason why this article was selected'),
+    reason: z.string().describe('A concise, one-sentence reason why this article is important enough for the front page.'),
   })
 ).describe('An array of the most relevant news articles, with a relevance score for each.');
 export type FilterRelevantNewsOutput = z.infer<typeof FilterRelevantNewsOutputSchema>;
 
 export async function filterRelevantNews(input: FilterRelevantNewsInput): Promise<FilterRelevantNewsOutput> {
-  return filterRelevantNewsFlow(input);
+  // Limit to 50 articles to avoid exceeding context window
+  const limitedInput = { articles: input.articles.slice(0, 50) };
+  return filterRelevantNewsFlow(limitedInput);
 }
 
 const filterRelevantNewsPrompt = ai.definePrompt({
   name: 'filterRelevantNewsPrompt',
   input: {schema: FilterRelevantNewsInputSchema},
   output: {schema: FilterRelevantNewsOutputSchema},
-  prompt: `You are an AI news aggregator that sifts through news articles from various regions and determines the most relevant and important ones.
+  prompt: `You are the Editor-in-Chief of a prestigious global newspaper like the New York Times. You are reviewing a list of incoming stories from the newswire.
 
-You will be provided with an array of news articles, each containing a title, description, link, and source.
+Your task is to act as a discerning gatekeeper. You must:
+1.  Analyze the provided list of articles.
+2.  Identify the stories with the highest global significance, potential impact, and reader interest.
+3.  Assign a 'relevanceScore' from 0.0 to 1.0 to each article, where 1.0 is a must-print, front-page story.
+4.  For each selected article, provide a concise, one-sentence 'reason' explaining its newsworthiness, as if you were justifying its placement to your editorial board.
+5.  Return an array of the articles you have selected. Only include articles with a relevance score of 0.5 or higher.
 
-Your task is to:
-1.  Assess the relevance and importance of each article based on its potential impact and interest to a global audience.
-2.  Assign a relevance score (between 0 and 1) to each article.
-3.  Create output array of news articles, with relevance score and reasoning why this article was selected.
+Consider these factors in your judgment:
+*   **Global Impact:** Does this affect international politics, the world economy, or major global cultures?
+*   **Urgency & Timeliness:** Is this breaking news? Does it represent a significant development in an ongoing story?
+*   **Originality:** Is this a unique story or a rehash of something already widely reported?
+*   **Human Interest:** Does the story have a compelling human element?
 
-Consider factors such as:
-*   The significance of the events described in the article.
-*   The potential impact on international relations, global economy, or other areas of broad interest.
-*   The uniqueness of the story (i.e., whether it's a novel development or a repetition of existing news).
+Do not just summarize the articles. Your role is to curate and prioritize. Be selective and ruthless in your judgment.
 
-Articles: {{{articles}}}
+Incoming articles from the newswire:
+{{{json articles}}}
 `, 
 });
 

@@ -1,49 +1,58 @@
 'use server';
 /**
- * @fileOverview Reformat news article flow. Takes a news article URL and reformats it into a consistent style.
+ * @fileOverview Creates a news briefing from an article summary.
  *
- * - reformatNewsArticle - A function that handles the news article reformatting process.
- * - ReformatNewsArticleInput - The input type for the reformatNewsArticle function.
- * - ReformatNewsArticleOutput - The return type for the reformatNewsArticle function.
+ * - createNewsBriefing - A function that handles the briefing creation process.
+ * - CreateNewsBriefingInput - The input type for the function.
+ * - CreateNewsBriefingOutput - The return type for the function.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const ReformatNewsArticleInputSchema = z.object({
-  articleUrl: z.string().describe('The URL of the news article to reformat.'),
-  originalArticle: z.string().describe('The content of the original news article.'),
+const CreateNewsBriefingInputSchema = z.object({
+  title: z.string().describe('The title of the news article.'),
+  description: z.string().describe('The summary or description of the news article.'),
+  source: z.string().describe('The original source of the article (e.g., BBC News).'),
 });
-export type ReformatNewsArticleInput = z.infer<typeof ReformatNewsArticleInputSchema>;
+export type CreateNewsBriefingInput = z.infer<typeof CreateNewsBriefingInputSchema>;
 
-const ReformatNewsArticleOutputSchema = z.object({
-  reformattedArticle: z.string().describe('The reformatted news article content.'),
+const CreateNewsBriefingOutputSchema = z.object({
+  briefing: z.string().describe('The generated news briefing in Markdown format.'),
 });
-export type ReformatNewsArticleOutput = z.infer<typeof ReformatNewsArticleOutputSchema>;
+export type CreateNewsBriefingOutput = z.infer<typeof CreateNewsBriefingOutputSchema>;
 
-export async function reformatNewsArticle(input: ReformatNewsArticleInput): Promise<ReformatNewsArticleOutput> {
-  return reformatNewsArticleFlow(input);
+export async function createNewsBriefing(input: CreateNewsBriefingInput): Promise<CreateNewsBriefingOutput> {
+  return createNewsBriefingFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'reformatNewsArticlePrompt',
-  input: {schema: ReformatNewsArticleInputSchema},
-  output: {schema: ReformatNewsArticleOutputSchema},
-  prompt: `You are a professional news editor. Your task is to reformat news articles into a consistent and easy-to-read style.
+  name: 'createNewsBriefingPrompt',
+  input: {schema: CreateNewsBriefingInputSchema},
+  output: {schema: CreateNewsBriefingOutputSchema},
+  prompt: `You are a senior editor at a prestigious publication like The New York Times.
+Your task is to take a raw newswire summary and transform it into a polished, insightful, and eloquent news briefing suitable for your discerning audience.
 
-  Here is the original news article:
-  {{{originalArticle}}}
-  
-  Reformat the article to be clear, concise, and engaging for a general audience. Focus on readability and maintain the original article\'s factual accuracy.
-  Return the reformatted article.
-  `,
+Adhere to these principles:
+1.  **Adopt a Journalistic Tone**: Write with clarity, authority, and objectivity.
+2.  **Add Context and Depth**: Do not just rephrase the summary. Expand on the key points, explain the 'why' behind the news, and provide necessary background information that a well-informed reader would appreciate.
+3.  **Structure for Readability**: Use Markdown for clear formatting. Use paragraphs to separate ideas. Do not use headings.
+4.  **Attribute the Source**: Casually mention the original source of the report within the text (e.g., "According to a report from {{source}}, ...").
+5.  **Focus on Significance**: Start by immediately addressing why this story matters.
+
+You will be given the title, a description/summary, and the source. Produce a briefing of 3-4 paragraphs.
+
+**Article Title:** {{{title}}}
+**Newswire Summary:** {{{description}}}
+**Original Source:** {{{source}}}
+`,
 });
 
-const reformatNewsArticleFlow = ai.defineFlow(
+const createNewsBriefingFlow = ai.defineFlow(
   {
-    name: 'reformatNewsArticleFlow',
-    inputSchema: ReformatNewsArticleInputSchema,
-    outputSchema: ReformatNewsArticleOutputSchema,
+    name: 'createNewsBriefingFlow',
+    inputSchema: CreateNewsBriefingInputSchema,
+    outputSchema: CreateNewsBriefingOutputSchema,
   },
   async input => {
     const {output} = await prompt(input);

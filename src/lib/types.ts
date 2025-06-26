@@ -1,16 +1,8 @@
 export type Region = {
   id: string;
   name: string;
+  url: string;
 };
-
-export const REGIONS: Region[] = [
-  { id: 'all', name: 'Top Stories' },
-  { id: 'USA', name: 'USA' },
-  { id: 'Korea', name: 'Korea' },
-  { id: 'China', name: 'China' },
-  { id: 'Japan', name: 'Japan' },
-  { id: 'Saudi Arabia', name: 'Saudi Arabia' },
-];
 
 export type Article = {
   title: string;
