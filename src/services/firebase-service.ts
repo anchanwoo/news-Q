@@ -14,7 +14,8 @@ let db: Firestore;
 
 /**
  * Initializes the Firebase Admin SDK and returns the Firestore instance.
- * Explicitly uses applicationDefault() credentials for robust authentication in managed environments.
+ * In a managed environment like App Hosting, calling initializeApp() with no arguments
+ * allows the SDK to automatically discover service credentials.
  */
 function getDb(): Firestore {
   if (db) {
@@ -22,9 +23,7 @@ function getDb(): Firestore {
   }
 
   if (getApps().length === 0) {
-    initializeApp({
-      credential: applicationDefault(),
-    });
+    initializeApp();
   }
   
   db = getFirestore();
@@ -52,8 +51,6 @@ export async function cacheArticles(articles: AnalyzedArticle[]): Promise<void> 
     });
     console.log('Successfully cached articles.');
   } catch (error) {
-    // Re-throw the error to be handled by the calling function (e.g., the cron job).
-    // This ensures that failures in caching are not silent.
     console.error(`[CRITICAL] Failed to cache articles to Firestore. Error: ${(error as Error).message}`);
     throw error;
   }
