@@ -1,86 +1,86 @@
-# ニュースQ (NewsQ)
+# ニュースQ (News-Q) - AI 기반 뉴스 분석 서비스
 
-This is a Next.js starter project in Firebase Studio, designed as an AI-powered news analysis platform.
+## 📰 프로젝트 소개
+AI가 세계의 뉴스를 다각도로 분석하여 깊이 있는 통찰력을 제공하는 뉴스 플랫폼입니다.
 
-To get started, take a look at `src/app/page.tsx`.
+## ✨ 주요 기능
+- 🤖 AI 기반 뉴스 필터링 및 분석
+- 📊 실시간 뉴스 업데이트
+- 🎯 카테고리별 뉴스 분류
+- 📱 반응형 웹 디자인
+- 🔄 자동 뉴스 캐싱 시스템
 
----
+## 🛠️ 기술 스택
+- **Frontend**: Next.js 14, React 18, TypeScript
+- **Styling**: Tailwind CSS, Radix UI
+- **AI**: Google AI (Genkit)
+- **Database**: Firebase Firestore
+- **Deployment**: Vercel/Google App Hosting
 
-## Local Development (Editing in Cursor, VS Code, etc.)
+## 🚀 빠른 시작
 
-You can edit this project on your local computer using any code editor. Follow these steps to get set up:
+### 1. 환경 변수 설정
+```bash
+# .env.local 파일 생성
+GOOGLE_APPLICATION_CREDENTIALS=your-firebase-credentials.json
+GOOGLE_AI_API_KEY=your-google-ai-api-key
+```
 
-### 1. Exporting Your Code from Firebase Studio
+### 2. 의존성 설치
+```bash
+npm install
+```
 
-This project needs to be linked to a version control system like Git and hosted on a platform like GitHub.
+### 3. 개발 서버 실행
+```bash
+npm run dev
+```
 
-1.  **Initialize Git and Push to GitHub:** If you haven't already, you'll need to initialize a Git repository here and push your code to a new repository on [GitHub](https://github.com).
-    ```bash
-    # (Inside the Firebase Studio terminal)
-    git init -b main
-    git add .
-    git commit -m "Initial commit from Firebase Studio"
-    git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-    git push -u origin main
-    ```
-    *(Replace `YOUR_USERNAME/YOUR_REPOSITORY` with your actual GitHub repository details.)*
+### 4. 뉴스 업데이트 (수동)
+```bash
+# 브라우저에서 접속
+http://localhost:9002/api/update-news
+```
 
-### 2. Setting Up Your Local Environment
+## 📋 배포 가이드
 
-1.  **Clone the Repository:** Open a terminal on your local machine and clone the code from your GitHub repository.
-    ```bash
-    git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-    cd YOUR_REPOSITORY
-    ```
+### Vercel 배포
+1. Vercel 계정 생성
+2. GitHub 저장소 연결
+3. 환경 변수 설정
+4. 자동 배포
 
-2.  **Install Dependencies:** Once you are inside the project directory, install all the necessary packages using npm.
-    ```bash
-    npm install
-    ```
+### Google App Hosting 배포
+1. Google Cloud Console에서 프로젝트 생성
+2. App Hosting 활성화
+3. `gcloud app deploy` 명령어로 배포
 
-3.  **Set Up Environment Variables:** The app may require environment variables for connecting to services like Firebase.
-    *   Create a new file named `.env.local` in the root of your project.
-    *   Copy the contents of the `.env` file into `.env.local`.
-    *   To connect to your own Firebase project locally, you will need to create a service account key and add its path to this file. For example: `GOOGLE_APPLICATION_CREDENTIALS="path/to/your/service-account-key.json"`
+## 🔄 자동화 설정
 
-4.  **Run the Development Server:** Start the Next.js development server.
-    ```bash
-    npm run dev
-    ```
+### Cron Job 설정 (Vercel)
+```bash
+# vercel.json에 추가
+{
+  "crons": [
+    {
+      "path": "/api/update-news",
+      "schedule": "0 8 * * *"
+    }
+  ]
+}
+```
 
-The application should now be running on [http://localhost:9002](http://localhost:9002). You can now open the project folder in Cursor AI, VS Code, or your preferred editor and start making changes!
+## 📊 모니터링
+- Firebase Console에서 데이터 확인
+- Vercel Analytics로 성능 모니터링
+- Google Cloud Logging으로 에러 추적
 
----
+## 🤝 기여하기
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## Deployment to Production (Live Service)
-
-This project is configured for deployment using [Firebase App Hosting](https://firebase.google.com/docs/app-hosting), a fully-managed, serverless platform built for production workloads.
-
-To launch your app as a live service, you'll need to deploy it from your local machine using the Firebase CLI.
-
-### 1. Set Up Your Firebase Project
-
-1.  **Create a Firebase Project:** If you haven't already, go to the [Firebase Console](https://console.firebase.google.com/) and create a new project.
-2.  **Upgrade to the Blaze Plan:** To use the Google AI APIs (for news analysis) and for hosting resources beyond the free tier, you must upgrade your project to the "Blaze (Pay as you go)" billing plan. You will be billed for your usage of Google Cloud services.
-3.  **Enable App Hosting:** In your Firebase project, navigate to the "Build" section and select "App Hosting". Follow the on-screen instructions to create a new backend and connect your GitHub repository.
-
-### 2. Deploying Your App
-
-Firebase App Hosting uses a Git-based workflow. Deployments are triggered automatically when you push commits to your main branch on GitHub.
-
-1.  **Commit and Push Your Changes:** After making changes locally, commit them to your Git repository and push them to GitHub.
-    ```bash
-    git add .
-    git commit -m "My latest changes for production"
-    git push origin main
-    ```
-2.  **Automatic Deployment:** App Hosting will detect the new push, automatically build your Next.js application, and deploy it. You can monitor the progress in the Firebase Console under App Hosting.
-
-### 3. (Optional) Connect a Custom Domain
-
-Once your app is live, you can connect your own domain name (e.g., `www.your-app-name.com`).
-
-1.  Go to the App Hosting page in the Firebase Console.
-2.  Click "Add custom domain" and follow the instructions to verify your domain ownership and point your DNS records to Firebase.
-
-Your app is now a live, production-ready service that automatically updates its content daily!
+## �� 라이선스
+MIT License
