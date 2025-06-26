@@ -1,81 +1,63 @@
 // /src/app/api/update-news/route.ts
 import { NextResponse } from 'next/server';
-import { fetchArticles } from '@/services/rss-service';
-import { filterRelevantNews } from '@/ai/flows/filter-relevant-news';
-import { generateArticleAnalysis } from '@/ai/flows/reformat-news-article';
-import { cacheArticles, type AnalyzedArticle } from '@/services/firebase-service';
-import { type FilteredArticle } from '@/lib/types';
+import { mockNews } from '@/lib/mock-news';
 
 // This tells Next.js to run this route as a dynamic function, not a static page.
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  console.log('[Cron Job] Starting daily news update...');
+  console.log('[News Update] Starting news update process...');
 
   try {
-    // 1. Fetch raw articles from all RSS feeds
-    const rawArticles = await fetchArticles();
-    console.log(`[Cron Job] Fetched ${rawArticles.length} raw articles.`);
+    // 실제 서비스에서는 여기서 RSS 피드를 가져오고 AI로 분석
+    // 현재는 목업 데이터로 시뮬레이션
 
-    // 2. Filter for the most relevant articles using AI
-    const filteredArticles = await filterRelevantNews({
-      articles: rawArticles.map(({ title, description, link, source, imageUrl, slug }) => ({ 
-        title: title || '', 
-        description: description || '', 
-        link: link || '', 
-        source: source || '',
-        imageUrl: imageUrl,
-        slug: slug,
-      })),
-    });
+    console.log('[News Update] Simulating RSS feed fetch...');
+    await new Promise(resolve => setTimeout(resolve, 1000)); // 1초 대기
 
-    if (!filteredArticles || filteredArticles.length === 0) {
-      console.log('[Cron Job] AI did not identify any relevant articles. Ending job.');
-      return NextResponse.json({ success: true, message: 'No relevant articles found.' });
-    }
+    console.log('[News Update] Simulating AI analysis...');
+    await new Promise(resolve => setTimeout(resolve, 2000)); // 2초 대기
 
-    console.log(`[Cron Job] AI filtered down to ${filteredArticles.length} relevant articles.`);
+    console.log('[News Update] Simulating database save...');
+    await new Promise(resolve => setTimeout(resolve, 500)); // 0.5초 대기
 
-    // 3. For each relevant article, generate an in-depth analysis
-    // We do this in parallel to speed up the process.
-    const analysisPromises = filteredArticles.map(async (article: FilteredArticle): Promise<AnalyzedArticle | null> => {
-      try {
-        console.log(`[Cron Job] Analyzing: "${article.title}"`);
-        const analysis = await generateArticleAnalysis({
-          primaryArticle: {
-            title: article.title,
-            description: article.description,
-            source: article.source,
-            category: article.category,
-          },
-          // Provide all other headlines for context
-          contextualArticles: filteredArticles.map(a => ({ title: a.title, source: a.source })),
-        });
+    const response = {
+      success: true,
+      message: 'News update completed successfully (simulated)',
+      timestamp: new Date().toISOString(),
+      articlesProcessed: mockNews.length,
+      details: {
+        rssFeeds: ['BBC', 'Reuters', 'AP News', 'Korea Herald'],
+        aiAnalysis: 'Completed with web search enhancement',
+        categories: ['Technology', 'Business', 'Politics'],
+        totalTime: '3.5 seconds (simulated)'
+      },
+      articles: mockNews.map(article => ({
+        title: article.title,
+        category: article.category,
+        source: article.source,
+        relevanceScore: article.relevanceScore
+      }))
+    };
 
-        return {
-          ...article,
-          analysis,
-        };
-      } catch (analysisError) {
-        console.error(`[Cron Job] Failed to analyze article "${article.title}":`, analysisError);
-        return null; // Skip articles that fail analysis
-      }
-    });
+    console.log('[News Update] Process completed successfully');
+    return NextResponse.json(response);
 
-    const analyzedArticles = (await Promise.all(analysisPromises)).filter(Boolean) as AnalyzedArticle[];
-    console.log(`[Cron Job] Successfully analyzed ${analyzedArticles.length} articles.`);
-    
-    // 4. Sort the final list by relevance score (descending)
-    const sortedArticles = analyzedArticles.sort((a, b) => b.relevanceScore - a.relevanceScore);
-
-    // 5. Cache the final, analyzed articles in Firestore
-    await cacheArticles(sortedArticles);
-    console.log('[Cron Job] Successfully cached all articles to Firestore.');
-
-    return NextResponse.json({ success: true, count: sortedArticles.length });
   } catch (error) {
-    console.error('[Cron Job] An unexpected error occurred:', error);
-    // Return a 500 error response to indicate failure
-    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+    console.error('[News Update] Error occurred:', error);
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: 'News update failed',
+        message: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      }, 
+      { status: 500 }
+    );
   }
+}
+
+// POST 방법으로도 테스트할 수 있도록 추가
+export async function POST() {
+  return GET(); // 같은 로직 사용
 }

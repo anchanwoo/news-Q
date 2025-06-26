@@ -4,7 +4,7 @@ import { Header } from '@/components/header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CATEGORIES } from '@/lib/mock-data';
 import { Separator } from '@/components/ui/separator';
-import { getCachedArticles } from '@/services/firebase-service';
+import { getMockArticles } from '@/lib/mock-news';
 
 
 export default function NewsPage({
@@ -36,7 +36,7 @@ export default function NewsPage({
 }
 
 async function ArticleGrid({ category }: { category: string }) {
-  const allArticles = await getCachedArticles();
+  const allArticles = await getMockArticles();
 
   if (!allArticles || allArticles.length === 0) {
     return (

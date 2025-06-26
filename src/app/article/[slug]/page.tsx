@@ -15,9 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getArticleBySlug, type AnalyzedArticle } from '@/services/firebase-service';
+import { getMockArticleBySlug } from '@/lib/mock-news';
 import { FinancialChart } from './financial-chart';
-import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
   const { slug } = params;
@@ -26,11 +25,10 @@ export default async function ArticlePage({ params }: { params: { slug: string }
     notFound();
   }
   
-  const article = await getArticleBySlug(slug);
+  // Firebase 대신 목업 데이터 사용
+  const article = await getMockArticleBySlug(slug);
 
   if (!article) {
-    // Optionally, you could try to generate it on the fly, but for a cached system,
-    // showing not found is more consistent.
     notFound();
   }
   
@@ -38,7 +36,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
   const briefingParagraphs = article.analysis.briefing.split('\n').filter(p => p.trim() !== '');
   const editorsNoteParagraphs = article.analysis.editorsNote?.split('\n').filter(p => p.trim() !== '');
-  const povCrossfireAnalysisParagraphs = article.analysis.povCrossfire?.analysis.split('\n').filter(p => p.trim() !== '');
+  const povCrossfireAnalysisParagraphs = article.analysis.povCrossfire?.analysis?.split('\n').filter((p: string) => p.trim() !== '');
 
   const chartData = article.analysis.financials?.map(item => ({
     period: item.period,
@@ -69,18 +67,16 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             </Link>
            </div>
            
-          <div className="mb-8 overflow-hidden rounded-lg">
-             <AspectRatio ratio={16 / 9}>
-              <Image
-                src={article.imageUrl || placeholderImage}
-                alt={article.title}
-                className="object-cover"
-                data-ai-hint="news headline"
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 896px"
-              />
-            </AspectRatio>
+          <div className="mb-8 overflow-hidden rounded-lg relative aspect-video">
+            <Image
+              src={article.imageUrl || placeholderImage}
+              alt={article.title}
+              className="object-cover"
+              data-ai-hint="news headline"
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 896px"
+            />
           </div>
 
           <div className="space-y-8">
@@ -116,14 +112,14 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="prose prose-slate dark:prose-invert max-w-none">
-                        {povCrossfireAnalysisParagraphs?.map((p, i) => (
+                        {povCrossfireAnalysisParagraphs?.map((p: string, i: number) => (
                             <p key={`crossfire-${i}`}>{p}</p>
                         ))}
                     </div>
                     <div>
                         <h4 className="font-semibold text-sm mb-2 mt-4">Compared Articles:</h4>
                         <ul className="list-none space-y-2">
-                            {article.analysis.povCrossfire.comparedArticles.map((compArticle, i) => (
+                            {article.analysis.povCrossfire.comparedArticles?.map((compArticle: any, i: number) => (
                                 <li key={i} className="text-sm text-muted-foreground border-l-2 pl-3 border-primary/30">
                                     <span className="font-medium text-foreground">{compArticle.title}</span>
                                     <span className="text-xs"> — {compArticle.source}</span>
@@ -144,7 +140,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  {article.analysis.keyFigures.map((figure) => (
+                  {article.analysis.keyFigures.map((figure: any) => (
                     <div key={figure.name}>
                       <h3 className="font-semibold">{figure.name}</h3>
                       <p className="text-muted-foreground mt-1 prose prose-sm">{figure.profile}</p>
@@ -165,7 +161,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                     <CardContent>
                         <div className="relative pl-6">
                             <div className="absolute left-[1px] top-1 h-full w-0.5 bg-border -translate-x-1/2"></div>
-                            {article.analysis.timeline.map((item, index) => (
+                            {article.analysis.timeline.map((item: any, index: number) => (
                                 <div key={index} className="relative flex items-start pb-8 last:pb-0">
                                     <div className="absolute left-[1px] top-1.5 h-3 w-3 rounded-full bg-primary -translate-x-1/2 border-4 box-content border-background"></div>
                                     <div className="pl-8">
@@ -220,11 +216,11 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                       <div>
                           <h3 className="flex items-center gap-2 font-semibold"><Users className="h-4 w-4" /> Key Competitors</h3>
                           <div className="flex flex-wrap gap-2 mt-2">
-                              {article.analysis.marketSnapshot.keyCompetitors.map(c => <Badge key={c} variant="outline">{c}</Badge>)}
+                              {article.analysis.marketSnapshot.keyCompetitors.map((c: string) => <Badge key={c} variant="outline">{c}</Badge>)}
                           </div>
                       </div>
                       <div>
-                          <h3 className="flex items-center gap-2 font-semibold"><Star className="h-4 w-4" /> Analyst's Take</h3>
+                          <h3 className="flex items-center gap-2 font-semibold"><Star className="h-4 w-5" /> Analyst's Take</h3>
                           <p className="text-muted-foreground mt-1 prose prose-sm">{article.analysis.marketSnapshot.analystsTake}</p>
                       </div>
                   </CardContent>
@@ -264,7 +260,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {article.analysis.financials.map((item) => (
+                        {article.analysis.financials.map((item: any) => (
                           <TableRow key={item.period}>
                             <TableCell className="font-medium">{item.period}</TableCell>
                             <TableCell>{item.revenue}</TableCell>
