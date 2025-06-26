@@ -47,12 +47,21 @@ const GenerateArticleAnalysisOutputSchema = z.object({
 });
 export type GenerateArticleAnalysisOutput = z.infer<typeof GenerateArticleAnalysisOutputSchema>;
 
+// A simpler output schema for non-business articles.
+const BasicArticleAnalysisOutputSchema = GenerateArticleAnalysisOutputSchema.omit({ 
+    outlook: true, 
+    financials: true, 
+    marketSnapshot: true 
+});
+
+
 export async function generateArticleAnalysis(input: GenerateArticleAnalysisInput): Promise<GenerateArticleAnalysisOutput> {
   return generateArticleAnalysisFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'generateArticleAnalysisPrompt',
+// Prompt for Business news, with financial tools.
+const fullArticleAnalysisPrompt = ai.definePrompt({
+  name: 'fullArticleAnalysisPrompt',
   input: {schema: GenerateArticleAnalysisInputSchema},
   output: {schema: GenerateArticleAnalysisOutputSchema},
   tools: [fetchFinancialDataTool],
@@ -75,12 +84,11 @@ Your task is to take a primary newswire summary and transform it into a multi-fa
 - This section should be more analytical and forward-looking than the main briefing.
 - Format this as 2-3 detailed paragraphs using Markdown.
 
-**Task 3: Business Analysis (If Applicable)**
-- Check if the primary article's category is 'Business'.
-- If the category is 'Business', your task is to determine if financial analysis is appropriate for this article.
+**Task 3: Business Analysis**
+- Since this is a business article, your task is to determine if financial analysis is appropriate.
 - Read the article carefully. If it is about a specific, publicly traded company, you should use the \`fetchFinancialData\` tool to retrieve its financial data. Use the company's name as the \`company\` parameter for the tool (e.g., "Apple Inc.", "Microsoft").
 - If you use the tool and receive data, use that information and the article's context to populate all the fields for 'financials', 'outlook', and 'marketSnapshot'.
-- If the category is NOT 'Business', or if the article is about a general market trend, multiple companies, a private company, or for any other reason the tool is not applicable, DO NOT use the tool. In this case, you must leave the 'financials', 'outlook', and 'marketSnapshot' fields empty.
+- If the article is about a general market trend, multiple companies, a private company, or for any other reason the tool is not applicable, DO NOT use the tool. In this case, you must leave the 'financials', 'outlook', and 'marketSnapshot' fields empty.
 
 **Primary Article Details:**
 - **Title:** {{{primaryArticle.title}}}
@@ -93,14 +101,72 @@ Your task is to take a primary newswire summary and transform it into a multi-fa
 `,
 });
 
+// Prompt for non-business news. No financial tools.
+const basicArticleAnalysisPrompt = ai.definePrompt({
+  name: 'basicArticleAnalysisPrompt',
+  input: {schema: GenerateArticleAnalysisInputSchema},
+  output: {schema: BasicArticleAnalysisOutputSchema},
+  prompt: `You are a senior editor at a prestigious global publication like The New York Times, with a specialty in deep-dive analysis.
+Your task is to take a primary newswire summary and transform it into a multi-faceted, insightful piece of journalism. You will not be performing financial analysis.
+
+**Task 1: Write the News Briefing**
+- Based *only* on the provided primary article, write a polished, insightful news briefing.
+- Adopt a journalistic tone: clear, authoritative, and objective.
+- Add context and depth. Do not just rephrase the summary. Explain the 'why' and the immediate significance.
+- Structure with Markdown for readability. Use paragraphs, but do not use headings.
+- Casually mention the original source (e.g., "According to a report from {{primaryArticle.source}}, ...").
+- Produce a briefing of 2-3 paragraphs.
+
+**Task 2: Write the Editor's Note**
+- After the briefing, write a separate, more comprehensive analysis titled "Editor's Note".
+- For this, you MUST consider the primary article in the broader context of all other recent headlines provided in \`allArticleTitles\`.
+- Synthesize information from potentially related articles in the list to build a deeper narrative. If you identify multiple articles about the same core event, combine their insights.
+- Act as if you have searched the web to provide historical context, explain the current situation's long-term significance, and offer a nuanced prediction of future developments.
+- This section should be more analytical and forward-looking than the main briefing.
+- Format this as 2-3 detailed paragraphs using Markdown.
+
+**Primary Article Details:**
+- **Title:** {{{primaryArticle.title}}}
+- **Newswire Summary:** {{{primaryArticle.description}}}
+- **Original Source:** {{{primaryArticle.source}}}
+- **Category:** {{{primaryArticle.category}}}
+
+**Contextual Headlines:**
+{{{json allArticleTitles}}}
+`,
+});
+
+
 const generateArticleAnalysisFlow = ai.defineFlow(
   {
     name: 'generateArticleAnalysisFlow',
     inputSchema: GenerateArticleAnalysisInputSchema,
     outputSchema: GenerateArticleAnalysisOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input): Promise<GenerateArticleAnalysisOutput> => {
+    // Use TypeScript for the conditional logic, not the prompt
+    if (input.primaryArticle.category === 'Business') {
+      console.log(`[Flow] Handling 'Business' article with full analysis: "${input.primaryArticle.title}"`);
+      const { output } = await fullArticleAnalysisPrompt(input);
+      if (!output) {
+        console.error("[Flow] Full analysis prompt failed to return output for business article.");
+        throw new Error("AI analysis failed for business article.");
+      }
+      return output;
+    } else {
+      console.log(`[Flow] Handling non-business article with basic analysis: "${input.primaryArticle.title}"`);
+      const { output } = await basicArticleAnalysisPrompt(input);
+       if (!output) {
+        console.error("[Flow] Basic analysis prompt failed to return output for non-business article.");
+        throw new Error("AI analysis failed for non-business article.");
+      }
+      // Combine the basic output with empty fields to match the full schema
+      return {
+        ...output,
+        financials: undefined,
+        marketSnapshot: undefined,
+        outlook: undefined,
+      };
+    }
   }
 );
