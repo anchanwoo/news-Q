@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getCachedArticles } from '@/services/firebase-service';
-import { generateHeadlineImage } from '@/ai/flows/generate-headline-image';
 
 export default async function LandingPage() {
   const articles = await getCachedArticles();
@@ -14,20 +13,11 @@ export default async function LandingPage() {
   if (articles && articles.length > 0) {
     const topArticle = articles[0];
     topHeadline = topArticle.title;
-    try {
-      // Use the article's core reason as a more focused prompt for image generation
-      const result = await generateHeadlineImage({ headline: topArticle.reason });
-      if (result.imageDataUri) {
-        heroImageUrl = result.imageDataUri;
-        dataAiHint = "ai generated";
-      }
-    } catch (error) {
-      console.error("Failed to generate headline image:", error);
-      // Fallback to placeholder or article image if generation fails
-      if(topArticle.imageUrl) {
-        heroImageUrl = topArticle.imageUrl;
-        dataAiHint = "news headline"
-      }
+
+    // Use the real image from the article if it exists, otherwise use the placeholder.
+    if (topArticle.imageUrl) {
+      heroImageUrl = topArticle.imageUrl;
+      dataAiHint = "news headline";
     }
   }
 
