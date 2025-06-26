@@ -48,7 +48,7 @@ async function ArticleGrid({ region }: { region: string }) {
   }
   
   const filteredArticles = await filterRelevantNews({
-    articles: articlesToFilter.map(({ title, description, link, source }) => ({ title, description, link, source })),
+    articles: articlesToFilter.map(({ title, description, link, source }) => ({ title: title || '', description: description || '', link: link || '', source: source || '' })),
   });
 
   if (!filteredArticles || filteredArticles.length === 0) {
@@ -98,8 +98,7 @@ function ArticleGridSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-12">
       <div className="md:col-span-12 flex flex-col md:flex-row gap-8">
-        <Skeleton className="h-[300px] md:h-auto md:w-1/2 rounded-lg" />
-        <div className="md:w-1/2 space-y-4">
+        <div className="md:w-1/2 space-y-4 py-4">
           <Skeleton className="h-8 w-1/4" />
           <Skeleton className="h-12 w-full" />
           <Skeleton className="h-24 w-full" />
@@ -108,10 +107,9 @@ function ArticleGridSkeleton() {
       </div>
       {[...Array(2)].map((_, i) => (
         <div key={i} className="md:col-span-6 space-y-3">
-          <Skeleton className="h-[225px] w-full rounded-lg" />
-          <Skeleton className="h-4 w-1/4" />
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-12 w-3/4" />
+          <Skeleton className="h-6 w-1/4" />
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-16 w-3/4" />
         </div>
       ))}
     </div>

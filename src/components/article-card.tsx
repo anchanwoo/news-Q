@@ -43,7 +43,7 @@ export function ArticleCard({
           </CardHeader>
           <CardContent className="p-0 mt-4">
             <CardDescription className="text-base md:text-lg text-foreground/80">
-              {article.description}
+              {article.reason}
             </CardDescription>
           </CardContent>
           <CardFooter className="p-0 mt-6">
@@ -70,7 +70,7 @@ export function ArticleCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-grow p-0 mt-2">
-        <CardDescription className="text-sm">{article.description}</CardDescription>
+        <CardDescription className="text-sm">{article.reason}</CardDescription>
       </CardContent>
       <CardFooter className="p-0 mt-4">
          <Link href={linkHref} className="text-xs font-semibold text-primary hover:underline flex items-center gap-1">
