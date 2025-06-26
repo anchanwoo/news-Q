@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
-import { ArrowUpRight, LineChart, TableIcon, Newspaper, Scale, BarChartBig, Briefcase, Users, Star } from 'lucide-react';
+import { ArrowUpRight, LineChart, TableIcon, Newspaper, Scale, BarChartBig, Briefcase, Users, Star, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -15,15 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import { fetchArticles } from '@/services/rss-service';
 import { filterRelevantNews } from '@/ai/flows/filter-relevant-news';
+import { FinancialChart } from './financial-chart';
 
 // The page is now a Server Component by default.
 // It receives searchParams as props, so we don't need 'use client' or the hook.
@@ -123,17 +117,6 @@ async function ArticleContent({ title, description, source, category, companyNam
     revenue: parseFloat(item.revenue.replace(/[^0-9.]/g, '')),
     profit: parseFloat(item.profit.replace(/[^0-9.]/g, '')),
   })).reverse();
-
-  const chartConfig = {
-    revenue: {
-      label: "Revenue (M)",
-      color: "hsl(var(--chart-1))",
-    },
-    profit: {
-      label: "Profit (M)",
-      color: "hsl(var(--chart-2))",
-    },
-  } satisfies ChartConfig;
 
   return (
     <div className="space-y-8">
@@ -258,35 +241,7 @@ async function ArticleContent({ title, description, source, category, companyNam
         </Card>
       )}
 
-      {chartData && chartData.length > 0 && (
-        <Card>
-          <CardHeader>
-             <CardTitle className="flex items-center gap-2 text-xl font-headline">
-              <LineChart className="h-5 w-5" />
-              Financial Performance
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="w-full h-[300px]">
-              <BarChart data={chartData} accessibilityLayer>
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="period"
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                />
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent indicator="dot" />}
-                />
-                <Bar dataKey="revenue" fill="var(--color-revenue)" radius={4} />
-                <Bar dataKey="profit" fill="var(--color-profit)" radius={4} />
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-      )}
+      <FinancialChart data={chartData} />
 
     </div>
   );
