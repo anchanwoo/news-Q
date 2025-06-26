@@ -26,13 +26,13 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-transparent bg-transparent text-white mix-blend-difference supports-[backdrop-filter]:bg-transparent/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-card/80 text-foreground supports-[backdrop-filter]:bg-card/60 supports-[backdrop-filter]:backdrop-blur-xl">
       <div className="container flex h-16 items-center">
         <div className="mr-auto flex items-center">
           <Link href="/" className="flex items-center gap-2">
             <Logo className="h-8 w-8 text-primary" />
-            <span className="font-bold font-headline sm:inline-block text-2xl">
-              POV
+            <span className="font-bold font-jp sm:inline-block text-2xl">
+              ニュースQ
             </span>
           </Link>
         </div>
@@ -48,7 +48,7 @@ export function Header() {
                     'px-3 py-2 text-sm font-medium rounded-md transition-colors',
                     currentCategory === category.id
                       ? 'bg-secondary text-secondary-foreground'
-                      : 'text-muted-foreground hover:bg-secondary/50'
+                      : 'hover:bg-secondary/50'
                   )}
                 >
                   {category.name}

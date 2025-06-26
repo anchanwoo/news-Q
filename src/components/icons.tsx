@@ -22,12 +22,38 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
         y="55%"
         dominantBaseline="middle"
         textAnchor="middle"
-        fontSize="7"
+        fontSize="10"
         fontWeight="bold"
         fill="currentColor"
-        className="font-headline"
+        className="font-jp"
       >
-        POV
+        Q
+      </text>
+    </svg>
+  );
+}
+
+export function WordmarkLogo(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 400 80"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <style>
+        {`.wordmark { font: 800 80px "M PLUS Rounded 1c", sans-serif; }`}
+      </style>
+      <text
+        x="0"
+        y="65"
+        className="wordmark"
+        fill="currentColor"
+        stroke="rgba(0,0,0,0.1)"
+        strokeWidth="6"
+        paintOrder="stroke"
+        strokeLinejoin="round"
+      >
+        ニュースQ
       </text>
     </svg>
   );

@@ -12,6 +12,7 @@ export default {
       fontFamily: {
         body: ['Inter', 'sans-serif'],
         headline: ['EB Garamond', 'serif'],
+        jp: ['"M PLUS Rounded 1c"', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
