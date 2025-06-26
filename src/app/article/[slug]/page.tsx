@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
-import { ArrowUpRight, LineChart, TableIcon, Newspaper } from 'lucide-react';
+import { ArrowUpRight, LineChart, TableIcon, Newspaper, Scale, BarChartBig, Briefcase, Users, Star } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -89,7 +89,7 @@ async function ArticleContent({ title, description, source, category, companyNam
      // Fetch all articles to provide context to the AI
     // NOTE: In a production app, this would be inefficient. Caching or a more targeted approach would be better.
     const articlesToFilter = await fetchArticles();
-    const filteredArticles = await filterRelevantNews({ articles: articlesToFilter.map(({ title, description, link, source }) => ({ title, description, link, source })) });
+    const filteredArticles = await filterRelevantNews({ articles: articlesToFilter.map(({ title, description, link, source }) => ({ title, description, link, source: source || '' })) });
     const allArticleTitles = filteredArticles.map(a => a.title);
 
     const primaryArticle = { title, description, source, category, companyName };
@@ -122,7 +122,7 @@ async function ArticleContent({ title, description, source, category, companyNam
     period: item.period,
     revenue: parseFloat(item.revenue.replace(/[^0-9.]/g, '')),
     profit: parseFloat(item.profit.replace(/[^0-9.]/g, '')),
-  }));
+  })).reverse();
 
   const chartConfig = {
     revenue: {
@@ -158,6 +158,58 @@ async function ArticleContent({ title, description, source, category, companyNam
           </CardContent>
         </Card>
       )}
+      
+      {data.financials && data.financials.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Latest Revenue</CardTitle>
+                    <Scale className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{data.financials[0].revenue}</div>
+                    <p className="text-xs text-muted-foreground">{data.financials[0].change} from last quarter</p>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Latest Profit</CardTitle>
+                    <BarChartBig className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{data.financials[0].profit}</div>
+                    <p className="text-xs text-muted-foreground">Latest reported quarter</p>
+                </CardContent>
+            </Card>
+        </div>
+      )}
+
+      {data.marketSnapshot && (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-xl font-headline">
+                    <Briefcase className="h-5 w-5" />
+                    Market Snapshot
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div>
+                    <h3 className="flex items-center gap-2 font-semibold"><TrendingUp className="h-4 w-4" /> Sector Outlook</h3>
+                    <p className="text-muted-foreground mt-1">{data.marketSnapshot.sectorOutlook}</p>
+                </div>
+                <div>
+                    <h3 className="flex items-center gap-2 font-semibold"><Users className="h-4 w-4" /> Key Competitors</h3>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {data.marketSnapshot.keyCompetitors.map(c => <Badge key={c} variant="outline">{c}</Badge>)}
+                    </div>
+                </div>
+                <div>
+                    <h3 className="flex items-center gap-2 font-semibold"><Star className="h-4 w-4" /> Analyst's Take</h3>
+                    <p className="text-muted-foreground mt-1 prose prose-sm">{data.marketSnapshot.analystsTake}</p>
+                </div>
+            </CardContent>
+        </Card>
+      )}
 
       {data.outlook && (
         <Card>
@@ -168,7 +220,7 @@ async function ArticleContent({ title, description, source, category, companyNam
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">{data.outlook}</p>
+            <p className="text-muted-foreground prose prose-sm">{data.outlook}</p>
           </CardContent>
         </Card>
       )}
@@ -178,7 +230,7 @@ async function ArticleContent({ title, description, source, category, companyNam
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl font-headline">
               <TableIcon className="h-5 w-5" />
-              Financial Snapshot
+              Financial History
             </CardTitle>
           </CardHeader>
           <CardContent>

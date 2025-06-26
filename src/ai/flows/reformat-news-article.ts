@@ -32,11 +32,19 @@ const FinancialDataSchema = z.object({
     change: z.string().describe("Percentage change from the previous period, e.g., '+5.2%'.")
 });
 
+const MarketSnapshotSchema = z.object({
+  keyCompetitors: z.array(z.string()).describe("A list of 2-3 key competitors for the company."),
+  sectorOutlook: z.string().describe("A brief analysis of the outlook for the company's industry sector."),
+  analystsTake: z.string().describe("A concise 'analyst's take' on the news, as if from a financial expert."),
+});
+
+
 const GenerateArticleAnalysisOutputSchema = z.object({
   briefing: z.string().describe('A standard, professional news briefing based on the primary article, formatted in Markdown.'),
   editorsNote: z.string().optional().describe('An in-depth analysis titled "Editor\'s Note". It synthesizes related news from the provided headlines, provides background context, and offers a future outlook. This should be a comprehensive, multi-paragraph analysis in Markdown format.'),
   outlook: z.string().optional().describe('For business news, a forward-looking analysis of the company or market.'),
   financials: z.array(FinancialDataSchema).optional().describe('For business news, a summary of key financial data for the discussed company.'),
+  marketSnapshot: MarketSnapshotSchema.optional().describe("For business news, a snapshot of the market including competitors, sector outlook, and an analyst's take."),
 });
 export type GenerateArticleAnalysisOutput = z.infer<typeof GenerateArticleAnalysisOutputSchema>;
 
@@ -50,7 +58,7 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateArticleAnalysisOutputSchema},
   tools: [fetchFinancialDataTool],
   prompt: `You are a senior editor at a prestigious global publication like The New York Times, with a specialty in deep-dive analysis.
-Your task is to take a primary newswire summary and transform it into a multi-faceted, insightful piece of journalism. You have two main tasks.
+Your task is to take a primary newswire summary and transform it into a multi-faceted, insightful piece of journalism.
 
 **Task 1: Write the News Briefing**
 - Based *only* on the provided primary article, write a polished, insightful news briefing.
@@ -68,11 +76,15 @@ Your task is to take a primary newswire summary and transform it into a multi-fa
 - This section should be more analytical and forward-looking than the main briefing.
 - Format this as 2-3 detailed paragraphs using Markdown.
 
-**Special Instructions for Business News (Category: Business):**
-- If the primary article is about a specific company ({{primaryArticle.companyName}}), you MUST use the 'fetchFinancialData' tool to get its latest financial data.
-- Based on the article and the financial data, provide a concise 'outlook' on the company's future prospects.
-- Populate the 'financials' array with the data from the tool.
-- If no company is named or the tool is not applicable, leave 'outlook' and 'financials' empty.
+**Task 3: Business Analysis (ONLY for Category: Business)**
+- If the primary article's category is 'Business' and it mentions a specific company ({{primaryArticle.companyName}}), you MUST perform the following:
+  1.  **Fetch Financials:** Use the 'fetchFinancialData' tool to get its latest financial data. Populate the 'financials' array with the data from the tool.
+  2.  **Provide Outlook:** Based on the article and the financial data, provide a concise 'outlook' on the company's future prospects.
+  3.  **Create Market Snapshot:**
+      - **Key Competitors:** Identify 2-3 main competitors.
+      - **Sector Outlook:** Briefly describe the outlook for the company's industry sector.
+      - **Analyst's Take:** Provide a sharp, concise "analyst's take" on what this news means for the company and investors.
+- If no company is named, the category is not 'Business', or the tool is not applicable, leave 'outlook', 'financials', and 'marketSnapshot' empty.
 
 **Primary Article Details:**
 - **Title:** {{{primaryArticle.title}}}
